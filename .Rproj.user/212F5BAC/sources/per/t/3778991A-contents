@@ -1,0 +1,28 @@
+library(tidyverse)
+library(readxl)
+
+# Read the xlsx file
+data <- read_excel("shailendraHomotypicData\\shailendraHomotypicData.xlsx")
+
+for (i in 2:106){
+    col_name <- colnames(data)[i]
+    data %>%
+        group_by(Time) %>%
+        select(Time, {{col_name}}) %>%
+        write_delim(
+            delim = "\t",
+            col_names = TRUE,
+            file = paste0("shailendraHomotypicData\\allTriplicateData\\", col_name, ".txt") # nolint: line_length_linter.
+        )
+}
+
+# paste0("shailendraHomotypicData\\allTriplicateData\\", col_name, ".txt") %>%
+# print()
+# # data %>%
+# #     group_by(Time) %>%
+# #     select(Time, {{col_name}})
+
+# for (i in 2:20){
+#     col_name <- colnames(data)[i]
+#     print(col_name)
+# }

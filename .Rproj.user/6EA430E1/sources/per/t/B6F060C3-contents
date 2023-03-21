@@ -1,0 +1,14 @@
+#plotting 4 aSf 5 PrLDm from X030_143
+#ggp <- ggplot(data, aes(x, y)) +                 # Create ggplot2 plot without lines & curves
+#  geom_point()
+#ggp                                              # Draw ggplot2 plot
+
+
+
+ggplot(data = X030_127) +
+  geom_point(mapping = aes(x = `hours`, y = `1 aSf 10 PrLDm`), color = "lightskyblue1")+
+  geom_point(mapping = aes(x = `hours`, y = `1 aSf 15 PrLDm`), color = "lightskyblue2")+
+  geom_point(mapping = aes(x = `hours`, y = `1 aSf 20 PrLDm`), color = "lightskyblue3")+
+  geom_point(mapping = aes(x = `hours`, y = `1 aSf 30 PrLDm`), color = "lightskyblue4")+
+  scale_x_continuous(limits = c(0,24))
+

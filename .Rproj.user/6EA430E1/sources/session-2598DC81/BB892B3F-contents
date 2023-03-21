@@ -1,0 +1,534 @@
+library("tidyverse")
+library("readxl")
+
+# import data
+
+X030_126 <- read_xlsx("030-126.xlsx")
+X030_127 <- read_xlsx("030-127.xlsx")
+X030_128 <- read_xlsx("030-128.xlsx")
+X030_139 <- read_xlsx("030-139.xlsx")
+X030_143 <- read_xlsx("030-143.xlsx")
+X030_145 <- read_xlsx("030-145.xlsx")
+X030_148 <- read_xlsx("030-148.xlsx")
+
+# rename columns from AN notation to rxn condition names
+
+X030_126 <- X030_126 %>%
+  rename(
+    "1 aSf 10 PrLDm" = "A1",
+    "1 aSf 15 PrLDm" = "A2",
+    "1 aSf 20 PrLDm" = "A3",
+    "1 aSf 30 PrLDm" = "A4",
+    "2 aSf 10 PrLDm" = "A5",
+    "2 aSf 15 PrLDm" = "A6",
+    "2 aSf 20 PrLDm" = "A7",
+    "2 aSf 30 PrLDm" = "A8",
+    "4 aSf 10 PrLDm" = "A9",
+    "4 aSf 15 PrLDm" = "A10",
+    "4 aSf 20 PrLDm" = "A11",
+    "4 aSf 30 PrLDm" = "A12",
+    "0 aSf 10 PrLDm" = "B1",
+    "0 aSf 15 PrLDm" = "B2",
+    "0 aSf 20 PrLDm" = "B3",
+    "0 aSf 30 PrLDm" = "B4",
+    "1 aSf 0 PrLDm" = "B5",
+    "2 aSf 0 PrLDm" = "B6",
+    "4 aSf 0 PrLDm" = "B7" 
+  )
+X030_127 <- X030_127 %>%
+  rename(
+    "1 aSf 10 PrLDm" = "A1",
+    "1 aSf 15 PrLDm" = "A2",
+    "1 aSf 20 PrLDm" = "A3",
+    "1 aSf 30 PrLDm" = "A4",
+    "2 aSf 10 PrLDm" = "A5",
+    "2 aSf 15 PrLDm" = "A6",
+    "2 aSf 20 PrLDm" = "A7",
+    "2 aSf 30 PrLDm" = "A8",
+    "4 aSf 10 PrLDm" = "A9",
+    "4 aSf 15 PrLDm" = "A10",
+    "4 aSf 20 PrLDm" = "A11",
+    "4 aSf 30 PrLDm" = "A12",
+    "0 aSf 10 PrLDm" = "B1",
+    "0 aSf 15 PrLDm" = "B2",
+    "0 aSf 20 PrLDm" = "B3",
+    "0 aSf 30 PrLDm" = "B4",
+    "1 aSf 0 PrLDm" = "B5",
+    "2 aSf 0 PrLDm" = "B6",
+    "4 aSf 0 PrLDm" = "B7" 
+  )
+X030_128 <- X030_128 %>%
+  rename(
+    "1 aSf 10 PrLDm" = "A1",
+    "1 aSf 15 PrLDm" = "A2",
+    "1 aSf 20 PrLDm" = "A3",
+    "1 aSf 30 PrLDm" = "A4",
+    "2 aSf 10 PrLDm" = "A5",
+    "2 aSf 15 PrLDm" = "A6",
+    "2 aSf 20 PrLDm" = "A7",
+    "2 aSf 30 PrLDm" = "A8",
+    "4 aSf 10 PrLDm" = "A9",
+    "4 aSf 15 PrLDm" = "A10",
+    "4 aSf 20 PrLDm" = "A11",
+    "4 aSf 30 PrLDm" = "A12",
+    "0 aSf 10 PrLDm" = "B1",
+    "0 aSf 15 PrLDm" = "B2",
+    "0 aSf 20 PrLDm" = "B3",
+    "0 aSf 30 PrLDm" = "B4",
+    "1 aSf 0 PrLDm" = "B5",
+    "2 aSf 0 PrLDm" = "B6",
+    "4 aSf 0 PrLDm" = "B7" 
+  )
+X030_139 <- X030_139 %>%
+  rename(
+    "0.1 aSf 5 PrLDm" = "A1",
+    "0.1 aSf 10 PrLDm" = "A2",
+    "0.1 aSf 15 PrLDm" = "A3",
+    "0.1 aSf 20 PrLDm" = "A4",
+    "0.1 aSf 25 PrLDm" = "A5",
+    "0.1 aSf 30 PrLDm" = "A6",
+    "0.5 aSf 5 PrLDm" = "A7",
+    "0.5 aSf 10 PrLDm" = "A8",
+    "0.5 aSf 15 PrLDm" = "A9",
+    "0.5 aSf 20 PrLDm" = "A10",
+    "0.5 aSf 25 PrLDm" = "A11",
+    "0.5 aSf 30 PrLDm" = "A12",
+    "1 aSf 5 PrLDm" = "B1",
+    "1 aSf 10 PrLDm" = "B2",
+    "1 aSf 15 PrLDm" = "B3",
+    "1 aSf 20 PrLDm" = "B4",
+    "1 aSf 25 PrLDm" = "B5",
+    "1 aSf 30 PrLDm" = "B6",
+    "2 aSf 5 PrLDm" = "B7",
+    "2 aSf 10 PrLDm" = "B8",
+    "2 aSf 15 PrLDm" = "B9",
+    "2 aSf 20 PrLDm" = "B10",
+    "2 aSf 25 PrLDm" = "B11",
+    "2 aSf 30 PrLDm" = "B12",
+    "4 aSf 5 PrLDm" = "C1",
+    "4 aSf 10 PrLDm" = "C2",
+    "4 aSf 15 PrLDm" = "C3",
+    "4 aSf 20 PrLDm" = "C4",
+    "4 aSf 25 PrLDm" = "C5",
+    "4 aSf 30 PrLDm" = "C6",
+    "0 aSf 5 PrLDm" = "C7",
+    "0 aSf 10 PrLDm" = "C8",
+    "0 aSf 15 PrLDm" = "C9",
+    "0 aSf 20 PrLDm" = "C10",
+    "0 aSf 25 PrLDm" = "C11",
+    "0 aSf 30 PrLDm" = "C12",
+  )
+X030_143 <- X030_143 %>%
+  rename(
+    "0.1 aSf 5 PrLDm" = "A1",
+    "0.1 aSf 10 PrLDm" = "A2",
+    "0.1 aSf 15 PrLDm" = "A3",
+    "0.1 aSf 20 PrLDm" = "A4",
+    "0.1 aSf 25 PrLDm" = "A5",
+    "0.1 aSf 30 PrLDm" = "A6",
+    "0.5 aSf 5 PrLDm" = "A7",
+    "0.5 aSf 10 PrLDm" = "A8",
+    "0.5 aSf 15 PrLDm" = "A9",
+    "0.5 aSf 20 PrLDm" = "A10",
+    "0.5 aSf 25 PrLDm" = "A11",
+    "0.5 aSf 30 PrLDm" = "A12",
+    "1 aSf 5 PrLDm" = "B1",
+    "1 aSf 10 PrLDm" = "B2",
+    "1 aSf 15 PrLDm" = "B3",
+    "1 aSf 20 PrLDm" = "B4",
+    "1 aSf 25 PrLDm" = "B5",
+    "1 aSf 30 PrLDm" = "B6",
+    "2 aSf 5 PrLDm" = "B7",
+    "2 aSf 10 PrLDm" = "B8",
+    "2 aSf 15 PrLDm" = "B9",
+    "2 aSf 20 PrLDm" = "B10",
+    "2 aSf 25 PrLDm" = "B11",
+    "2 aSf 30 PrLDm" = "B12",
+    "4 aSf 5 PrLDm" = "C1",
+    "4 aSf 10 PrLDm" = "C2",
+    "4 aSf 15 PrLDm" = "C3",
+    "4 aSf 20 PrLDm" = "C4",
+    "4 aSf 25 PrLDm" = "C5",
+    "4 aSf 30 PrLDm" = "C6",
+    "0 aSf 5 PrLDm" = "C7",
+    "0 aSf 10 PrLDm" = "C8",
+    "0 aSf 15 PrLDm" = "C9",
+    "0 aSf 20 PrLDm" = "C10",
+    "0 aSf 25 PrLDm" = "C11",
+    "0 aSf 30 PrLDm" = "C12",
+    "0.1 aSf 0 PrLDm" = "D1",
+    "0.5 aSf 0 PrLDm" = "D2",
+    "1 aSf 0 PrLDm" = "D3",
+    "2 aSf 0 PrLDm" = "D4",
+    "4 aSf 0 PrLDm" = "D5"
+  )
+X030_145 <- X030_145 %>%
+  rename(
+    "0.1 aSf 5 PrLDm" = "A1",
+    "0.1 aSf 10 PrLDm" = "A2",
+    "0.1 aSf 15 PrLDm" = "A3",
+    "0.1 aSf 20 PrLDm" = "A4",
+    "0.1 aSf 25 PrLDm" = "A5",
+    "0.1 aSf 30 PrLDm" = "A6",
+    "0.5 aSf 5 PrLDm" = "A7",
+    "0.5 aSf 10 PrLDm" = "A8",
+    "0.5 aSf 15 PrLDm" = "A9",
+    "0.5 aSf 20 PrLDm" = "A10",
+    "0.5 aSf 25 PrLDm" = "A11",
+    "0.5 aSf 30 PrLDm" = "A12",
+    "1 aSf 5 PrLDm" = "B1",
+    "1 aSf 10 PrLDm" = "B2",
+    "1 aSf 15 PrLDm" = "B3",
+    "1 aSf 20 PrLDm" = "B4",
+    "1 aSf 25 PrLDm" = "B5",
+    "1 aSf 30 PrLDm" = "B6",
+    "2 aSf 5 PrLDm" = "B7",
+    "2 aSf 10 PrLDm" = "B8",
+    "2 aSf 15 PrLDm" = "B9",
+    "2 aSf 20 PrLDm" = "B10",
+    "2 aSf 25 PrLDm" = "B11",
+    "2 aSf 30 PrLDm" = "B12",
+    "4 aSf 5 PrLDm" = "C1",
+    "4 aSf 10 PrLDm" = "C2",
+    "4 aSf 15 PrLDm" = "C3",
+    "4 aSf 20 PrLDm" = "C4",
+    "4 aSf 25 PrLDm" = "C5",
+    "4 aSf 30 PrLDm" = "C6",
+    "0 aSf 5 PrLDm" = "C7",
+    "0 aSf 10 PrLDm" = "C8",
+    "0 aSf 15 PrLDm" = "C9",
+    "0 aSf 20 PrLDm" = "C10",
+    "0 aSf 25 PrLDm" = "C11",
+    "0 aSf 30 PrLDm" = "C12",
+    "0.1 aSf 0 PrLDm" = "D1",
+    "0.5 aSf 0 PrLDm" = "D2",
+    "1 aSf 0 PrLDm" = "D3",
+    "2 aSf 0 PrLDm" = "D4",
+    "4 aSf 0 PrLDm" = "D5"
+  )
+X030_148 <- X030_148 %>%
+  rename(
+    "0.1 aSf 5 PrLDm" = "A1",
+    "0.1 aSf 10 PrLDm" = "A2",
+    "0.1 aSf 15 PrLDm" = "A3",
+    "0.1 aSf 20 PrLDm" = "A4",
+    "0.1 aSf 25 PrLDm" = "A5",
+    "0.1 aSf 30 PrLDm" = "A6",
+    "0.5 aSf 5 PrLDm" = "A7",
+    "0.5 aSf 10 PrLDm" = "A8",
+    "0.5 aSf 15 PrLDm" = "A9",
+    "0.5 aSf 20 PrLDm" = "A10",
+    "0.5 aSf 25 PrLDm" = "A11",
+    "0.5 aSf 30 PrLDm" = "A12",
+    "1 aSf 5 PrLDm" = "B1",
+    "1 aSf 10 PrLDm" = "B2",
+    "1 aSf 15 PrLDm" = "B3",
+    "1 aSf 20 PrLDm" = "B4",
+    "1 aSf 25 PrLDm" = "B5",
+    "1 aSf 30 PrLDm" = "B6",
+    "2 aSf 5 PrLDm" = "B7",
+    "2 aSf 10 PrLDm" = "B8",
+    "2 aSf 15 PrLDm" = "B9",
+    "2 aSf 20 PrLDm" = "B10",
+    "2 aSf 25 PrLDm" = "B11",
+    "2 aSf 30 PrLDm" = "B12",
+    "4 aSf 5 PrLDm" = "C1",
+    "4 aSf 10 PrLDm" = "C2",
+    "4 aSf 15 PrLDm" = "C3",
+    "4 aSf 20 PrLDm" = "C4",
+    "4 aSf 25 PrLDm" = "C5",
+    "4 aSf 30 PrLDm" = "C6",
+    "0 aSf 5 PrLDm" = "C7",
+    "0 aSf 10 PrLDm" = "C8",
+    "0 aSf 15 PrLDm" = "C9",
+    "0 aSf 20 PrLDm" = "C10",
+    "0 aSf 25 PrLDm" = "C11",
+    "0 aSf 30 PrLDm" = "C12",
+    "0.1 aSf 0 PrLDm" = "D1",
+    "0.5 aSf 0 PrLDm" = "D2",
+    "1 aSf 0 PrLDm" = "D3",
+    "2 aSf 0 PrLDm" = "D4",
+    "4 aSf 0 PrLDm" = "D5"
+  )
+
+# make hours consistent for exp 030-139 onwards
+
+X030_139_hr <- X030_139 %>% mutate(across(hours, round, 3))
+X030_143_hr <- X030_143 %>% mutate(across(hours, round, 3))
+X030_145_hr <- X030_145 %>% mutate(across(hours, round, 3))
+X030_148_hr <- X030_148 %>% mutate(across(hours, round, 3))
+
+X030_139_filtered <- filter(
+  X030_139_hr, X030_139_hr$hours %% (round(1/3,3)) < 0.1)
+lapply(X030_139_filtered, `length<-`, max(lengths(X030_145)))
+
+# average data
+
+`0 aSf 5 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`0 aSf 5 PrLDm`,
+  `030_143` = X030_143$`0 aSf 5 PrLDm`,
+  `030_145` = X030_145$`0 aSf 5 PrLDm`,
+  `030_148` = X030_148$`0 aSf 5 PrLDm`
+)
+`0 aSf 10 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`0 aSf 10 PrLDm`,
+  `030_143` = X030_143$`0 aSf 10 PrLDm`,
+  `030_145` = X030_145$`0 aSf 10 PrLDm`,
+  `030_148` = X030_148$`0 aSf 10 PrLDm`
+)
+`0 aSf 15 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`0 aSf 15 PrLDm`,
+  `030_143` = X030_143$`0 aSf 15 PrLDm`,
+  `030_145` = X030_145$`0 aSf 15 PrLDm`,
+  `030_148` = X030_148$`0 aSf 15 PrLDm`
+)
+`0 aSf 20 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`0 aSf 20 PrLDm`,
+  `030_143` = X030_143$`0 aSf 20 PrLDm`,
+  `030_145` = X030_145$`0 aSf 20 PrLDm`,
+  `030_148` = X030_148$`0 aSf 20 PrLDm`
+)
+`0 aSf 25 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`0 aSf 25 PrLDm`,
+  `030_143` = X030_143$`0 aSf 25 PrLDm`,
+  `030_145` = X030_145$`0 aSf 25 PrLDm`,
+  `030_148` = X030_148$`0 aSf 25 PrLDm`
+)
+`0 aSf 30 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`0 aSf 30 PrLDm`,
+  `030_143` = X030_143$`0 aSf 30 PrLDm`,
+  `030_145` = X030_145$`0 aSf 30 PrLDm`,
+  `030_148` = X030_148$`0 aSf 30 PrLDm`
+)
+`0.1 aSf 5 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`0.1 aSf 5 PrLDm`,
+  `030_143` = X030_143$`0.1 aSf 5 PrLDm`,
+  `030_145` = X030_145$`0.1 aSf 5 PrLDm`,
+  `030_148` = X030_148$`0.1 aSf 5 PrLDm`
+)
+`0.1 aSf 10 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`0.1 aSf 10 PrLDm`,
+  `030_143` = X030_143$`0.1 aSf 10 PrLDm`,
+  `030_145` = X030_145$`0.1 aSf 10 PrLDm`,
+  `030_148` = X030_148$`0.1 aSf 10 PrLDm`
+)
+`0.1 aSf 15 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`0.1 aSf 15 PrLDm`,
+  `030_143` = X030_143$`0.1 aSf 15 PrLDm`,
+  `030_145` = X030_145$`0.1 aSf 15 PrLDm`,
+  `030_148` = X030_148$`0.1 aSf 15 PrLDm`
+)
+`0.1 aSf 20 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`0.1 aSf 20 PrLDm`,
+  `030_143` = X030_143$`0.1 aSf 20 PrLDm`,
+  `030_145` = X030_145$`0.1 aSf 20 PrLDm`,
+  `030_148` = X030_148$`0.1 aSf 20 PrLDm`
+)
+`0.1 aSf 25 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`0.1 aSf 25 PrLDm`,
+  `030_143` = X030_143$`0.1 aSf 25 PrLDm`,
+  `030_145` = X030_145$`0.1 aSf 25 PrLDm`,
+  `030_148` = X030_148$`0.1 aSf 25 PrLDm`
+)
+`0.1 aSf 30 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`0.1 aSf 30 PrLDm`,
+  `030_143` = X030_143$`0.1 aSf 30 PrLDm`,
+  `030_145` = X030_145$`0.1 aSf 30 PrLDm`,
+  `030_148` = X030_148$`0.1 aSf 30 PrLDm`
+)
+`0.5 aSf 5 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`0.5 aSf 5 PrLDm`,
+  `030_143` = X030_143$`0.5 aSf 5 PrLDm`,
+  `030_145` = X030_145$`0.5 aSf 5 PrLDm`,
+  `030_148` = X030_148$`0.5 aSf 5 PrLDm`
+)
+`0.5 aSf 10 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`0.5 aSf 10 PrLDm`,
+  `030_143` = X030_143$`0.5 aSf 10 PrLDm`,
+  `030_145` = X030_145$`0.5 aSf 10 PrLDm`,
+  `030_148` = X030_148$`0.5 aSf 10 PrLDm`
+)
+`0.5 aSf 15 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`0.5 aSf 15 PrLDm`,
+  `030_143` = X030_143$`0.5 aSf 15 PrLDm`,
+  `030_145` = X030_145$`0.5 aSf 15 PrLDm`,
+  `030_148` = X030_148$`0.5 aSf 15 PrLDm`
+)
+`0.5 aSf 20 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`0.5 aSf 20 PrLDm`,
+  `030_143` = X030_143$`0.5 aSf 20 PrLDm`,
+  `030_145` = X030_145$`0.5 aSf 20 PrLDm`,
+  `030_148` = X030_148$`0.5 aSf 20 PrLDm`
+)
+`0.5 aSf 25 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`0.5 aSf 25 PrLDm`,
+  `030_143` = X030_143$`0.5 aSf 25 PrLDm`,
+  `030_145` = X030_145$`0.5 aSf 25 PrLDm`,
+  `030_148` = X030_148$`0.5 aSf 25 PrLDm`
+)
+`0.5 aSf 30 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`0.5 aSf 30 PrLDm`,
+  `030_143` = X030_143$`0.5 aSf 30 PrLDm`,
+  `030_145` = X030_145$`0.5 aSf 30 PrLDm`,
+  `030_148` = X030_148$`0.5 aSf 30 PrLDm`
+)
+`1 aSf 5 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`1 aSf 5 PrLDm`,
+  `030_143` = X030_143$`1 aSf 5 PrLDm`,
+  `030_145` = X030_145$`1 aSf 5 PrLDm`,
+  `030_148` = X030_148$`1 aSf 5 PrLDm`
+)
+`1 aSf 10 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`1 aSf 10 PrLDm`,
+  `030_143` = X030_143$`1 aSf 10 PrLDm`,
+  `030_145` = X030_145$`1 aSf 10 PrLDm`,
+  `030_148` = X030_148$`1 aSf 10 PrLDm`
+)
+`1 aSf 15 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`1 aSf 15 PrLDm`,
+  `030_143` = X030_143$`1 aSf 15 PrLDm`,
+  `030_145` = X030_145$`1 aSf 15 PrLDm`,
+  `030_148` = X030_148$`1 aSf 15 PrLDm`
+)
+`1 aSf 20 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`1 aSf 20 PrLDm`,
+  `030_143` = X030_143$`1 aSf 20 PrLDm`,
+  `030_145` = X030_145$`1 aSf 20 PrLDm`,
+  `030_148` = X030_148$`1 aSf 20 PrLDm`
+)
+`1 aSf 25 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`1 aSf 25 PrLDm`,
+  `030_143` = X030_143$`1 aSf 25 PrLDm`,
+  `030_145` = X030_145$`1 aSf 25 PrLDm`,
+  `030_148` = X030_148$`1 aSf 25 PrLDm`
+)
+`1 aSf 30 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`1 aSf 30 PrLDm`,
+  `030_143` = X030_143$`1 aSf 30 PrLDm`,
+  `030_145` = X030_145$`1 aSf 30 PrLDm`,
+  `030_148` = X030_148$`1 aSf 30 PrLDm`
+)
+`2 aSf 5 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`2 aSf 5 PrLDm`,
+  `030_143` = X030_143$`2 aSf 5 PrLDm`,
+  `030_145` = X030_145$`2 aSf 5 PrLDm`,
+  `030_148` = X030_148$`2 aSf 5 PrLDm`
+)
+`2 aSf 10 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`2 aSf 10 PrLDm`,
+  `030_143` = X030_143$`2 aSf 10 PrLDm`,
+  `030_145` = X030_145$`2 aSf 10 PrLDm`,
+  `030_148` = X030_148$`2 aSf 10 PrLDm`
+)
+`2 aSf 15 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`2 aSf 15 PrLDm`,
+  `030_143` = X030_143$`2 aSf 15 PrLDm`,
+  `030_145` = X030_145$`2 aSf 15 PrLDm`,
+  `030_148` = X030_148$`2 aSf 15 PrLDm`
+)
+`2 aSf 20 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`2 aSf 20 PrLDm`,
+  `030_143` = X030_143$`2 aSf 20 PrLDm`,
+  `030_145` = X030_145$`2 aSf 20 PrLDm`,
+  `030_148` = X030_148$`2 aSf 20 PrLDm`
+)
+`2 aSf 25 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`2 aSf 25 PrLDm`,
+  `030_143` = X030_143$`2 aSf 25 PrLDm`,
+  `030_145` = X030_145$`2 aSf 25 PrLDm`,
+  `030_148` = X030_148$`2 aSf 25 PrLDm`
+)
+`2 aSf 30 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`2 aSf 30 PrLDm`,
+  `030_143` = X030_143$`2 aSf 30 PrLDm`,
+  `030_145` = X030_145$`2 aSf 30 PrLDm`,
+  `030_148` = X030_148$`2 aSf 30 PrLDm`
+)
+`4 aSf 5 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`4 aSf 5 PrLDm`,
+  `030_143` = X030_143$`4 aSf 5 PrLDm`,
+  `030_145` = X030_145$`4 aSf 5 PrLDm`,
+  `030_148` = X030_148$`4 aSf 5 PrLDm`
+)
+`4 aSf 10 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`4 aSf 10 PrLDm`,
+  `030_143` = X030_143$`4 aSf 10 PrLDm`,
+  `030_145` = X030_145$`4 aSf 10 PrLDm`,
+  `030_148` = X030_148$`4 aSf 10 PrLDm`
+)
+`4 aSf 15 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`4 aSf 15 PrLDm`,
+  `030_143` = X030_143$`4 aSf 15 PrLDm`,
+  `030_145` = X030_145$`4 aSf 15 PrLDm`,
+  `030_148` = X030_148$`4 aSf 15 PrLDm`
+)
+`4 aSf 20 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`4 aSf 20 PrLDm`,
+  `030_143` = X030_143$`4 aSf 20 PrLDm`,
+  `030_145` = X030_145$`4 aSf 20 PrLDm`,
+  `030_148` = X030_148$`4 aSf 20 PrLDm`
+)
+`4 aSf 25 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`4 aSf 25 PrLDm`,
+  `030_143` = X030_143$`4 aSf 25 PrLDm`,
+  `030_145` = X030_145$`4 aSf 25 PrLDm`,
+  `030_148` = X030_148$`4 aSf 25 PrLDm`
+)
+`4 aSf 30 PrLDm` <- tibble(
+  `hours` = X030_145_hr$hours,
+  `030_139` = X030_139_filtered$`4 aSf 5 PrLDm`,
+  `030_143` = X030_143$`4 aSf 5 PrLDm`,
+  `030_145` = X030_145$`4 aSf 5 PrLDm`,
+  `030_148` = X030_148$`4 aSf 5 PrLDm`
+)
+
+
+# sd tests
+
+`4 aSf 30 PrLDm` %>%
+  group_by(hours) %>%
+  summarise(
+    `mean` = mean(`030_139`, `030_143`, `030_145`, `030_148`, na.rm=TRUE),
+    `sd` = sd(`030_139`, `030_143`, `030_145`, `030_148`, na.rm=TRUE)
+    )
+
+
+data_avg <- tibble(
+  hours = X030_143$hours
+  `0 asf 5 prldm` = 
+)
