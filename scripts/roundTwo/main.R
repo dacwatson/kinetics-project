@@ -4,19 +4,22 @@ library(readr)
 library(hablar)
 library(stringr)
 library(lubridate)
+library(here)
 
-    # laptop
-setwd("G:\\Other computers\\Desktop\\---Actual Documents\\R Projects\\ThT Kinetics project") # nolint
-    # desktop windows
-setwd("C:/Users/landon/Desktop/---Actual Documents/R Projects/ThT Kinetics project") # nolint
-    # desktop linux
-setwd("C:\\Users\\Landon\\Documents\\---Actual Documents\\R Projects\\ThT Kinetics project\\.Rproj.user") # nolint
+#     # laptop
+# setwd("G:\\Other computers\\Desktop\\---Actual Documents\\R Projects\\ThT Kinetics project") # nolint
+#     # desktop windows
+# setwd("C:/Users/landon/Desktop/---Actual Documents/R Projects/ThT Kinetics project") # nolint
+#     # desktop linux
+# setwd("/home/landon/kinetics-project/") # nolint
 
 x030_152 <- read_csv(
-    "data\\roundTwo\\rawData\\030_152.csv",
-    col_type = list(.default = col_double(), `Time` = "t")
+    here("data", "roundTwo", "rawData", "030_152.csv"),
+    col_type = list(.default = col_double(),
+    `Time` = "t")
     )
 x030_152 <- rename_and_reformat_data("x030_152")
+
 
 reformat_raw <- function(data, exp) {
     d <- deparse(substitute(data)) # nolint

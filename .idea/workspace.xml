@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="68d888ad-f3a0-43ba-882b-7697117a764e" name="Changes" comment="" />
+    <list default="true" id="68d888ad-f3a0-43ba-882b-7697117a764e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/scripts/roundTwo/main.R" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/roundTwo/main.R" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -22,7 +24,7 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "/home/landon/kinetics-project"
+    "last_opened_file_path": "/home/landon/PycharmProjects/pythonProject"
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
