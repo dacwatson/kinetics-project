@@ -4,19 +4,9 @@ library(readr)
 library(hablar)
 library(stringr)
 library(lubridate)
+library(here)
 
-    # laptop
-setwd("G:\\Other computers\\Desktop\\---Actual Documents\\R Projects\\ThT Kinetics project") # nolint
-    # desktop windows
-setwd("C:/Users/landon/Desktop/---Actual Documents/R Projects/ThT Kinetics project") # nolint
-    # desktop linux
-setwd("C:\\Users\\Landon\\Documents\\---Actual Documents\\R Projects\\ThT Kinetics project\\.Rproj.user") # nolint
-
-x030_152 <- read_csv(
-    "data\\roundTwo\\rawData\\030_152.csv",
-    col_type = list(.default = col_double(), `Time` = "t")
-    )
-x030_152 <- rename_and_reformat_data("x030_152")
+here()
 
 reformat_raw <- function(data, exp) {
     d <- deparse(substitute(data)) # nolint
@@ -24,6 +14,7 @@ reformat_raw <- function(data, exp) {
     data %>%
     mutate(hours = as.duration(`Time`), .before = 1) %>% # nolint
     mutate(hours = (hours - hours[1]) / 3600) %>%
+    filter(hours <= 48) %>%
     select(!`Time`) %>%
     pivot_longer(c(-1), names_to = "original_col") %>%
     filter(hours <= hours(48)) %>%
@@ -63,3 +54,9 @@ rename_and_reformat_data <- function(exp) {
         print("No case found.")
     }
 }
+
+x030_152 <- read_csv(
+here("data", "roundTwo", "rawData", "030_152.csv"),
+col_type = list(.default = col_double(), `Time` = "t")
+)
+x030_152 <- rename_and_reformat_data("x030_152")
