@@ -5,11 +5,10 @@ library(hablar)
 library(stringr)
 library(lubridate)
 library(here)
-library(here)
 
 here()
 
-reformat_raw <- function(data, exp) {
+reformat_raw <- function(data, exp_name) {
     d <- deparse(substitute(data)) # nolint
 
     data %>%
@@ -19,11 +18,11 @@ reformat_raw <- function(data, exp) {
     select(!`Time`) %>%
     pivot_longer(c(-1), names_to = "original_col") %>%
     filter(hours <= hours(48)) %>%
-    mutate(exp = exp)
+    mutate(exp = exp_name)
 }
-rename_and_reformat_data <- function(exp) {
-    if (exp == "x030_152") {
-        x030_152 %>%
+rename_and_reformat_data <- function(data, exp_name) {
+    if (exp_name == "x030_152") {
+        data %>%
             rename(
                 "01 aSf 00 PrLDm" = "H12",
                 "01 aSf 05 PrLDm" = "H11",
@@ -50,14 +49,73 @@ rename_and_reformat_data <- function(exp) {
                 "00 aSf 25 PrLDm" = "G2",
                 "00 aSf 00 PrLDm" = "G1"
             ) %>%
-            reformat_raw(exp = exp)
+            reformat_raw(exp = exp_name)
     } else {
         print("No case found.")
     }
 }
+normalize_by_commonfactor <- function(data) {
+    group_regex <- regex("^[0-9]\\d*(\\.\\d+)? aSf \\d+ PrLDm")
 
-x030_152 <- read_csv(
-here("data", "roundTwo", "rawData", "030_152.csv"),
-col_type = list(.default = col_double(), `Time` = "t")
-)
-x030_152 <- rename_and_reformat_data("x030_152")
+    data %>%
+    mutate(grp = str_extract(original_col, group_regex)) %>%
+    group_by(hours, grp) %>%
+    unite(
+        col = "id",
+        c(original_col, exp),
+        sep = "_",
+        remove = FALSE) %>%
+
+    # normalize columns by a factor f for each column such that f*colmin=grpmin
+
+        # find the min for each individual reaction
+    ungroup() %>%
+    group_by(id) %>%
+    mutate(min_col = min(value, na.rm = TRUE)) %>%
+
+        # find the min for each stoichiometry
+    ungroup() %>%
+    group_by(grp) %>%
+    mutate(min_grp = min(value, na.rm = TRUE)) %>%
+
+        # multiply each reaction by the factor which will make
+        # the min of the reaction equal the min of the stoichiometry
+    ungroup() %>%
+    group_by(grp, id) %>%
+    mutate(factor = min_col / min_grp) %>%
+    mutate(fnorm.value = value / factor) %>%
+
+        # remove the temporary columns
+    select(-min_col, -min_grp, -original_col, -factor, -value) %>%
+
+    # zero-correct and normalize by id from 0 to 1
+
+    group_by(id) %>%
+    mutate(min_col = min(fnorm.value, na.rm = TRUE)) %>%
+    mutate(fnorm.value = fnorm.value - min_col) %>%
+    mutate(max_col = max(fnorm.value, na.rm = TRUE)) %>%
+    mutate(fnorm.value = fnorm.value / max_col) %>%
+    select(-min_col, -max_col)
+}
+process_experimental_data <- function(file, exp_string) {
+    return_data <- read_csv(
+            here("data", "roundTwo", "rawData", file),
+            col_type = list(
+                .default = col_double(),
+                `Time` = "t"
+                )
+        ) %>%
+        rename_and_reformat_data(exp_string) %>%
+        normalize_by_commonfactor()
+
+    return(return_data)
+}
+
+x030_152 <- process_experimental_data("030_152.csv", "x030_152")
+
+# x030_152 <- read_csv(
+# here("data", "roundTwo", "rawData", "030_152.csv"),
+# col_type = list(.default = col_double(), `Time` = "t")
+# )
+# x030_152 <- rename_and_reformat_data("x030_152") %>%
+#     normalize_by_commonfactor()

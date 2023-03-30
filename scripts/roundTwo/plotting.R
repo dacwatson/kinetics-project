@@ -3,6 +3,9 @@ library(dplyr)
 library(stringr)
 library(here)
 
+# Source data
+source()
+
 # View the plots separately
 printplot <- function(filter, folder, data) { # nolint: object_usage_linter.
 
