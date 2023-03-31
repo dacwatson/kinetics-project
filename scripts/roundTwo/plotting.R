@@ -4,31 +4,40 @@ library(stringr)
 library(here)
 
 # Source data
-source()
+source(here("scripts", "roundTwo", "main.R"))
 
-# View the plots separately
+# Creates a png image with name provided by string `filter` in the
+# `folder` path supplied, filtering `grp` for the string provided in `filter`.
 printplot <- function(filter, folder, data) { # nolint: object_usage_linter.
 
     p <- data %>%
-    filter(str_detect(grp, fixed(filter))) %>%
+    ungroup %>%
+    filter(str_detect(grp, fixed(filter))) %>% # nolint
+    filter(grp, contains("25 PrLDm")) %>%
 
-    ggplot(aes(x = hours, y = fnorm.value, color = id)) +
+    ggplot(aes(x = hours / 3600, y = fnorm_value, color = grp)) + # nolint
     geom_point() +
     geom_line() +
-    labs(x = "Time", y = "Fluorescence", title = filter) +
-    theme(aspect.ratio = 0.5)
+    labs(
+        x = "Time (hours)",
+        y = "Fluorescence",
+        title = paste0("Fluorescence of reactions containing ", filter),
+        color = "Reaction Group"
+        ) +
+    coord_cartesian(xlim = c(0, 48)) +
+    theme(plot.title = element_text(hjust = 0.5))
 
     filename <- paste0(here(), "/plots/roundTwo", folder, filter, ".png")
-    ggsave(filename, plot = p, width = 6, height = 4, dpi = 300)
+    ggsave(filename, plot = p, width = 8, height = 4, dpi = 240)
 }
-printplot("00 aSf", "/aSf/", x030_152_fnorm)
-printplot("01 aSf", "/aSf/", x030_152_fnorm)
-printplot("02 aSf", "/aSf/", x030_152_fnorm)
-printplot("04 aSf", "/aSf/", x030_152_fnorm)
+printplot("00 aSf", "/x030_152/aSf/", x030_152)
+printplot("01 aSf", "/x030_152/aSf/", x030_152)
+printplot("02 aSf", "/x030_152/aSf/", x030_152)
+printplot("04 aSf", "/x030_152/aSf/", x030_152)
 
-printplot("00 PrLDm", "/PrLDm/", x030_152_fnorm)
-printplot("05 PrLDm", "/PrLDm/", x030_152_fnorm)
-printplot("10 PrLDm", "/PrLDm/", x030_152_fnorm)
-printplot("15 PrLDm", "/PrLDm/", x030_152_fnorm)
-printplot("20 PrLDm", "/PrLDm/", x030_152_fnorm)
-printplot("25 PrLDm", "/PrLDm/", x030_152_fnorm)
+printplot("00 PrLDm", "/x030_152/PrLDm/", x030_152)
+printplot("05 PrLDm", "/x030_152/PrLDm/", x030_152)
+printplot("10 PrLDm", "/x030_152/PrLDm/", x030_152)
+printplot("15 PrLDm", "/x030_152/PrLDm/", x030_152)
+printplot("20 PrLDm", "/x030_152/PrLDm/", x030_152)
+printplot("25 PrLDm", "/x030_152/PrLDm/", x030_152)

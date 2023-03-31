@@ -8,19 +8,24 @@ library(here)
 
 here()
 
-reformat_raw <- function(data, exp_name) {
+reformat_raw <- function(exp_name, data) {
     d <- deparse(substitute(data)) # nolint
 
     data %>%
+    pivot_longer(
+        cols = !`Time`, # nolint
+        names_to = "grp"
+    ) %>%
+    mutate(exp = exp_name) %>%
+
+    drop_na(`Time`, `value`) %>% # nolint
+
     mutate(hours = as.duration(`Time`), .before = 1) %>% # nolint
-    mutate(hours = (hours - hours[1]) / 3600) %>%
-    filter(hours <= 48) %>%
-    select(!`Time`) %>%
-    pivot_longer(c(-1), names_to = "original_col") %>%
-    filter(hours <= hours(48)) %>%
-    mutate(exp = exp_name)
+    group_by(grp) %>% # nolint
+    mutate(hours = (hours - min(hours))) %>%
+    filter(hours <= hours(48))
 }
-rename_and_reformat_data <- function(data, exp_name) {
+rename_and_reformat <- function(data, exp_name) {
     if (exp_name == "x030_152") {
         data %>%
             rename(
@@ -55,14 +60,11 @@ rename_and_reformat_data <- function(data, exp_name) {
     }
 }
 normalize_by_commonfactor <- function(data) {
-    group_regex <- regex("^[0-9]\\d*(\\.\\d+)? aSf \\d+ PrLDm")
-
     data %>%
-    mutate(grp = str_extract(original_col, group_regex)) %>%
-    group_by(hours, grp) %>%
+    group_by(hours, grp) %>% # nolint
     unite(
         col = "id",
-        c(original_col, exp),
+        c(grp, exp),
         sep = "_",
         remove = FALSE) %>%
 
@@ -71,7 +73,7 @@ normalize_by_commonfactor <- function(data) {
         # find the min for each individual reaction
     ungroup() %>%
     group_by(id) %>%
-    mutate(min_col = min(value, na.rm = TRUE)) %>%
+    mutate(min_col = min(value, na.rm = TRUE)) %>% # nolint
 
         # find the min for each stoichiometry
     ungroup() %>%
@@ -82,19 +84,19 @@ normalize_by_commonfactor <- function(data) {
         # the min of the reaction equal the min of the stoichiometry
     ungroup() %>%
     group_by(grp, id) %>%
-    mutate(factor = min_col / min_grp) %>%
-    mutate(fnorm.value = value / factor) %>%
+    mutate(factor = min_col / min_grp) %>% # nolint
+    mutate(fnorm_value = value / factor) %>%
 
         # remove the temporary columns
-    select(-min_col, -min_grp, -original_col, -factor, -value) %>%
+    select(-min_col, -min_grp, -factor, -value) %>%
 
     # zero-correct and normalize by id from 0 to 1
 
     group_by(id) %>%
-    mutate(min_col = min(fnorm.value, na.rm = TRUE)) %>%
-    mutate(fnorm.value = fnorm.value - min_col) %>%
-    mutate(max_col = max(fnorm.value, na.rm = TRUE)) %>%
-    mutate(fnorm.value = fnorm.value / max_col) %>%
+    mutate(min_col = min(fnorm_value, na.rm = TRUE)) %>% # nolint
+    mutate(fnorm_value = fnorm_value - min_col) %>%
+    mutate(max_col = max(fnorm_value, na.rm = TRUE)) %>%
+    mutate(fnorm_value = fnorm_value / max_col) %>% # nolint
     select(-min_col, -max_col)
 }
 process_experimental_data <- function(file, exp_string) {
@@ -105,17 +107,10 @@ process_experimental_data <- function(file, exp_string) {
                 `Time` = "t"
                 )
         ) %>%
-        rename_and_reformat_data(exp_string) %>%
+        rename_and_reformat(exp_string) %>%
         normalize_by_commonfactor()
 
     return(return_data)
 }
 
 x030_152 <- process_experimental_data("030_152.csv", "x030_152")
-
-# x030_152 <- read_csv(
-# here("data", "roundTwo", "rawData", "030_152.csv"),
-# col_type = list(.default = col_double(), `Time` = "t")
-# )
-# x030_152 <- rename_and_reformat_data("x030_152") %>%
-#     normalize_by_commonfactor()
