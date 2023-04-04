@@ -18,9 +18,9 @@ ggplot(df_fit, aes(x = hours, y = fnorm_value)) +
     theme(aspect.ratio = 0.4)
 
 fit <- nls(
-    fnorm_value ~ 1 / (1 + exp(-(hours - xmid) / slope)),
+    fnorm_value ~ low + ((high - low) / (1 + exp((hours - xmid) / slope))),
     data = df_fit,
-    start = list(xmid = 21, slope = 1.9)
+    start = list(low = 0.2, high = 0.8, xmid = 21, slope = 1.9)
     )
 
 df_pred <- tibble(
@@ -33,6 +33,6 @@ df_pred$fnorm_value <- predict(fit, newdata = df_pred)
 
 # Plot the data and predicted values
 ggplot() +
-  geom_point(data = df_fit, aes(x = hours, y = fnorm_value)) +
-  geom_line(data = df_pred, aes(x = hours, y = fnorm_value)) +
-  theme(aspect.ratio = 0.4)  
+  geom_point(data = df_fit, aes(x = hours, y = fnorm_value), color = "red") +
+  geom_line(data = df_pred, aes(x = hours, y = fnorm_value), color = "blue") +
+  theme(aspect.ratio = 0.4)
