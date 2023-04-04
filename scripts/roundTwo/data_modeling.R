@@ -1,6 +1,7 @@
 library(dplyr)
 library(ggplot2)
-
+library(purrr)
+library(broom)
 
 
 df_fit <- x030_152 %>%
@@ -85,6 +86,7 @@ print_pred <- function(df, group) {
     return(p)
 }
 print_pred(x030_152, "01 aSf 05 PrLDm")
+print_pred(x030_152, "02 aSf 05 PrLDm")
 
 
 
@@ -97,12 +99,55 @@ printplot_temp("01 aSf 00 PrLDm", x030_152)
 fits <- x030_152 %>%
     ungroup() %>%
     filter(!str_detect(grp, "00 aSf 00 PrLDm|01 aSf 00 PrLDm")) %>%
-    group_by(grp) %>%
+    group_by(id, grp) %>%
     mutate(hours = as.numeric(hours) / 3600) %>%
     nest() %>%
     mutate(fit = map(data, ~ fit_boltzmann(.))) %>%
-    mutate(coef = map(fit, tidy))
+    mutate(coef = map(fit, tidy)) %>%
+    mutate(.fitted = map2(fit, data, ~ augment(.x, newdata = .y)))
 
-fits[[1,4]]
 
-fits %>% filter(grp == "00 aSf 20 PrLDm") %>% tidy_fit$term
+
+plot_fits %>% View()
+
+plot_fits %>%
+    ggplot() + # nolint
+    geom_point(aes(x = hours, y = fnorm_value, color = grp)) +
+    geom_line(aes(x = hours, y = .fitted, color = grp)) +
+    coord_cartesian(xlim = c(0, 48)) +
+    theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 0.5)
+
+
+
+plot_boltzmann_fits <- function(filter) {
+    plot_fits_ <- fits %>%
+        filter(str_detect(grp, filter)) %>%
+        ungroup() %>%
+        unnest(data, .fitted, names_repair = "minimal") %>%
+        select(hours, grp, fnorm_value, .fitted) %>%
+        group_by(grp)
+
+    p <- plot_fits_ %>%
+        ggplot() + # nolint
+        geom_point(aes(x = hours, y = fnorm_value, color = grp)) +
+        geom_line(aes(x = hours, y = .fitted, color = grp)) +
+        coord_cartesian(xlim = c(0, 48)) +
+        labs(
+            x = "Time (hours)",
+            y = "Fluorescence",
+            title = paste0("Fluorescence of reactions containing ", filter),
+            color = "Reaction Group"
+        ) +
+        theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 0.5)
+
+    return(p)
+}
+plot_boltzmann_fits("00 aSf") %>% save_plot("00 aSf", "/x030_152/fits/aSf/")
+plot_boltzmann_fits("01 aSf") %>% save_plot("01 aSf", "/x030_152/fits/aSf/")
+plot_boltzmann_fits("02 aSf") %>% save_plot("02 aSf", "/x030_152/fits/aSf/")
+plot_boltzmann_fits("04 aSf") %>% save_plot("04 aSf", "/x030_152/fits/aSf/")
+
+plot_boltzmann_fits("00 aSf") %>% save_plot("05 PrLDm", "/x030_152/fits/PrLDm/")
+plot_boltzmann_fits("01 aSf") %>% save_plot("10 PrLDm", "/x030_152/fits/PrLDm/")
+plot_boltzmann_fits("02 aSf") %>% save_plot("15 PrLDm", "/x030_152/fits/PrLDm/")
+plot_boltzmann_fits("04 aSf") %>% save_plot("20 PrLDm", "/x030_152/fits/PrLDm/")

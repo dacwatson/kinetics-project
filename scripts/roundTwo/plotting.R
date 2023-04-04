@@ -25,20 +25,19 @@ printplot_temp <- function(df, filter) {
 
     return(p)
 }
-
 # Creates a png image with name provided by string `filter` in the
 # `folder` path supplied, filtering `grp` for the string provided in `filter`.
-printplot <- function(df, folder, filter) {
-
-    p <- printplot_temp(filter, df)
+save_plot <- function(p, filter, folder) {
 
     filename <- paste0(here(), "/plots/roundTwo", folder, filter, ".png")
     ggsave(filename, plot = p, width = 8, height = 4, dpi = 240)
 }
-save_plot <- function(p, name, folder) {
+printplot <- function(df, folder, filter) {
 
-    filename <- paste0(here(), "/plots/roundTwo", folder, name, ".png")
-    ggsave(filename, plot = p, width = 8, height = 4, dpi = 240)
+    p <- df %>%
+        printplot_temp(filter)
+
+    p %>% save_plot(filter, folder)
 }
 
 printplot("00 aSf", "/x030_152/aSf/", x030_152)
