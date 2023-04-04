@@ -6,14 +6,10 @@ library(here)
 # Source data
 source(here("scripts", "roundTwo", "main.R"))
 
-# Creates a png image with name provided by string `filter` in the
-# `folder` path supplied, filtering `grp` for the string provided in `filter`.
-printplot <- function(filter, folder, data) { # nolint: object_usage_linter.
-
-    p <- data %>%
+printplot_temp <- function(df, filter) {
+    p <- df %>%
     ungroup %>%
-    filter(str_detect(grp, fixed(filter))) %>% # nolint
-    filter(grp, contains("25 PrLDm")) %>%
+    filter(str_detect(grp, stringr::fixed(filter))) %>% # nolint
 
     ggplot(aes(x = hours / 3600, y = fnorm_value, color = grp)) + # nolint
     geom_point() +
@@ -25,11 +21,26 @@ printplot <- function(filter, folder, data) { # nolint: object_usage_linter.
         color = "Reaction Group"
         ) +
     coord_cartesian(xlim = c(0, 48)) +
-    theme(plot.title = element_text(hjust = 0.5))
+    theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 0.5)
+
+    return(p)
+}
+
+# Creates a png image with name provided by string `filter` in the
+# `folder` path supplied, filtering `grp` for the string provided in `filter`.
+printplot <- function(df, folder, filter) {
+
+    p <- printplot_temp(filter, df)
 
     filename <- paste0(here(), "/plots/roundTwo", folder, filter, ".png")
     ggsave(filename, plot = p, width = 8, height = 4, dpi = 240)
 }
+save_plot <- function(p, name, folder) {
+
+    filename <- paste0(here(), "/plots/roundTwo", folder, name, ".png")
+    ggsave(filename, plot = p, width = 8, height = 4, dpi = 240)
+}
+
 printplot("00 aSf", "/x030_152/aSf/", x030_152)
 printplot("01 aSf", "/x030_152/aSf/", x030_152)
 printplot("02 aSf", "/x030_152/aSf/", x030_152)

@@ -108,9 +108,12 @@ process_experimental_data <- function(file, exp_string) {
                 )
         ) %>%
         rename_and_reformat(exp_string) %>%
-        normalize_by_commonfactor()
+        normalize_by_commonfactor() %>%
+        filter(!str_detect(grp, "25 PrLDm"))
 
     return(return_data)
+
+
 }
 
 x030_152 <- process_experimental_data("030_152.csv", "x030_152")
