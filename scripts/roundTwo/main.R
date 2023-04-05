@@ -16,7 +16,11 @@ reformat_raw <- function(exp_name, data) {
         cols = !`Time`, # nolint
         names_to = "grp"
     ) %>%
-    mutate(exp = exp_name) %>%
+    mutate(
+        exp = exp_name,
+        grp_asf = as.numeric(str_extract(grp, "\\d+(?=\\s+aSf)")), # extract number before " aSf" # nolint
+        grp_prldm = as.numeric(str_extract(grp, "\\d+(?=\\s+PrLDm)")) # extract number before " PrLDm" # nolint
+    ) %>%
 
     drop_na(`Time`, `value`) %>% # nolint
 
@@ -117,3 +121,5 @@ process_experimental_data <- function(file, exp_string) {
 }
 
 x030_152 <- process_experimental_data("030_152.csv", "x030_152")
+
+x030_152
