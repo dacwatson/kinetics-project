@@ -61,17 +61,10 @@ plot_boltzmann_fits <- function(df, filter) {
     return(p)
 }
 
-
-fits <- x030_152 %>%
-
-    mutate(fit = map(data, ~ boltzmann_fit(.))) %>%
-    mutate(
-    )
-fits %>% table_boltzmann_fits()
-
-test <- x030_152 %>%
+########################################
+fit_unnested <- x030_152 %>%
     ungroup() %>%
-    filter(!str_detect(grp, "00 aSf 00 PrLDm|01 aSf 00 PrLDm")) %>%
+    filter(!str_detect(grp, "00 aSf|00 PrLDm")) %>%
     group_by(id, grp, grp_asf, grp_prldm) %>%
     mutate(hours = as.numeric(hours) / 3600) %>%
     nest() %>%
@@ -83,7 +76,7 @@ test <- x030_152 %>%
     ) %>%
     unnest(coef)
 
-test_lagtime <- test %>%
+lagtime <- fit_unnested %>%
     ungroup %>%
     select(grp, grp_asf, grp_prldm, term, estimate, std.error) %>%
     filter(str_detect(term, "xmid|dt")) %>%
@@ -93,41 +86,95 @@ test_lagtime <- test %>%
         names_sep = "_"
     ) %>%
     mutate(lagtime = estimate_xmid - 2 * estimate_dt)
-test_lagtime
+
+plot_lagtime <- function(which_grp, filter) {
+    if (which_grp == "asf") {
+        p <- lagtime %>%
+            filter(grp_asf == filter) %>%
+                ggplot() + # nolint
+                geom_point(aes(x = grp_prldm, y = lagtime, color = grp)) +
+                geom_line(aes(x = grp_prldm, y = lagtime), color = "#5050e0") +
+                coord_cartesian(xlim = c(0, 20)) +
+                labs(
+                    x = "prldm conc",
+                    y = "lagtime",
+                    title = paste0("Lagtime of reactions containing 04 asf"),
+                    color = "Reaction Group"
+                ) +
+                theme(
+                    plot.title = element_text(hjust = 0.5),
+                    aspect.ratio = 0.5
+                )
+    return(p)
+    }
+    if (which_grp == "prldm") {
+        p <- lagtime %>%
+            filter(grp_prldm == filter) %>%
+                ggplot() + # nolint
+                geom_point(aes(x = grp_asf, y = lagtime, color = grp)) +
+                geom_line(aes(x = grp_asf, y = lagtime), color = "#5050e0") +
+                coord_cartesian(xlim = c(0, 4)) +
+                labs(
+                    x = "prldm conc",
+                    y = "lagtime",
+                    title = paste0("Lagtime of reactions containing 04 asf"),
+                    color = "Reaction Group"
+                ) +
+                theme(
+                    plot.title = element_text(hjust = 0.5),
+                    aspect.ratio = 0.5
+                )
+    return(p)
+    }
+}
+
+############################################################
+
+p <- lagtime %>%
+    group_by(grp_asf) %>%
+    ggplot() + # nolint
+    geom_line(aes(x = grp_prldm, y = lagtime, color = factor(grp_asf))) +
+    labs(
+        x = "prldm conc",
+        y = "lagtime",
+        title = paste0("Lagtime of reactions"),
+        color = "grp asf"
+    ) +
+    theme(
+        plot.title = element_text(hjust = 0.5),
+        aspect.ratio = 0.5
+    )
+p %>% save_plot("asf", "/x030_152/lagtime/")
+
+p <- lagtime %>%
+    group_by(grp_prldm) %>%
+    ggplot() + # nolint
+    geom_line(aes(x = grp_asf, y = lagtime, color = factor(grp_prldm))) +
+    labs(
+        x = "asf conc",
+        y = "lagtime",
+        title = paste0("Lagtime of reactions"),
+        color = "grp prldm"
+    ) +
+    theme(
+        plot.title = element_text(hjust = 0.5),
+        aspect.ratio = 0.5
+    )
+p %>% save_plot("prldm", "/x030_152/lagtime/")
 
 
 
 
-test_lagtime %>%
-    filter(grp_asf == 4) %>%
-        ggplot() + # nolint
-        geom_point(aes(x = grp_prldm, y = lagtime, color = grp)) +
-        geom_line(aes(x = grp_prldm, y = lagtime), color = "#5050e0") +
-        coord_cartesian(xlim = c(0, 20)) +
-        labs(
-            x = "prldm conc",
-            y = "lagtime",
-            title = paste0("Lagtime of reactions containing 04 asf"),
-            color = "Reaction Group"
-        ) +
-        theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 0.5)
-
-test_lagtime %>%
-    filter(grp_prldm == 20) %>%
-        ggplot() + # nolint
-        geom_point(aes(x = grp_asf, y = lagtime, color = grp)) +
-        geom_line(aes(x = grp_asf, y = lagtime), color = "#5050e0") +
-        coord_cartesian(xlim = c(0, 4)) +
-        labs(
-            x = "prldm conc",
-            y = "lagtime",
-            title = paste0("Lagtime of reactions containing 04 asf"),
-            color = "Reaction Group"
-        ) +
-        theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 0.5)
 
 
 
+plot_lagtime("asf", 4) %>% save_plot("04 aSf", "/x030_152/lagtime/aSf/")
+plot_lagtime("asf", 2) %>% save_plot("02 aSf", "/x030_152/lagtime/aSf/")
+plot_lagtime("asf", 1) %>% save_plot("01 aSf", "/x030_152/lagtime/aSf/")
+plot_lagtime("prldm", 5) %>% save_plot("05 PrLDm", "/x030_152/lagtime/PrLDm/")
+plot_lagtime("prldm", 10) %>% save_plot("10 PrLDm", "/x030_152/lagtime/PrLDm/")
+plot_lagtime("prldm", 15) %>% save_plot("15 PrLDm", "/x030_152/lagtime/PrLDm/")
+plot_lagtime("prldm", 20) %>% save_plot("20 PrLDm", "/x030_152/lagtime/PrLDm/")
 
 fits %>%
     map(
@@ -149,3 +196,22 @@ fits %>%
         plot_boltzmann_fits("20 PrLDm") %>%
             save_plot("20 PrLDm", "/x030_152/fits/PrLDm/"),
     )
+
+
+
+lagtime %>%
+    filter(grp_prldm == 5) %>%
+        ggplot() + # nolint
+        geom_point(aes(x = grp_asf, y = lagtime)) +
+        geom_line(aes(x = grp_asf, y = lagtime), color = "#5050e0") +
+        coord_cartesian(xlim = c(0, 4)) +
+        labs(
+            x = "prldm conc",
+            y = "lagtime",
+            title = paste0("Lagtime of reactions containing 04 asf"),
+            color = "Reaction Group"
+        ) +
+        theme(
+            plot.title = element_text(hjust = 0.5),
+            aspect.ratio = 0.5
+        )
