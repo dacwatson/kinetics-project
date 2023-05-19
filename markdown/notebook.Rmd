@@ -1,0 +1,61 @@
+---
+title: "Data Analysis"
+output: html_notebook
+---
+
+------------------------------------------------------------------------
+
+## Setting Up
+
+So the first thing we need to do is read our data from the .csv files and create R data objects (called "tibbles") out of them.
+
+We begin by importing the `readr` library from the `tidyverse` package, which allows us to read various types of file formats easily.
+
+We also import the `here` library, which allows us to interface easier with our filesystem.
+
+Once we've done that, we will have access to the `read_csv()` and the `here()` functions.
+
+- *`Library`--- a collection of prewritten functions.*
+
+```{r}
+library(readr)
+library(here)
+```
+
+As you saw when we loaded the `here` library, `here()` simply prints a string containing our home directory:
+
+```{r}
+here()
+```
+
+Now that we have our tools all arranged, we need to take a look at our raw data and clean it up a bit.
+
+
+### Data Cleaning
+
+This is what our data looks like when we export it from gen5:
+
+![](./images/excel.png)
+
+
+We want to clean this up because we don't want any extraneous data when manipulating our data objects.
+
+Let's delete the unnecessary temperature column and save as `.csv` to remove the formatting.
+
+Now our data is compatible with our `read_csv()` function.
+
+### Importing Data
+
+
+
+
+
+
+
+
+
+
+
+
+
+
