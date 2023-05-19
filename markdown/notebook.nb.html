@@ -1808,11 +1808,95 @@ function.</p>
 </div>
 <div id="importing-data" class="section level3">
 <h3>Importing Data</h3>
+<p>We need to tell R where our data is in our folder system. That means
+we should have a deliberately structured folder structure. For example,
+in this project, we have all saved data, processed or raw, in the
+<code>data</code> folder. We store data collected in the second round of
+collection in the folder <code>roundTwo</code>. And then we have our
+<code>XXX_YYY.csv</code> files containing our actual data.</p>
+<p>We can pass strings into <code>here()</code> to specify specific
+folders of the home directory:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaGVyZShcImRhdGFcIiwgXCJyb3VuZFR3b1wiLCBcInJhd0RhdGFcIiwgXCJkYXRhLmNzdlwiKVxuXG5gYGAifQ== -->
+<pre class="r"><code>here(&quot;data&quot;, &quot;roundTwo&quot;, &quot;rawData&quot;, &quot;data.csv&quot;)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiL2hvbWUvbGFuZG9uL0Rldi9SZXBvc2l0b3JpZXMva2luZXRpY3MtcHJvamVjdC9kYXRhL3JvdW5kVHdvL3Jhd0RhdGEvZGF0YS5jc3ZcIlxuIn0= -->
+<pre><code>[1] &quot;/home/landon/Dev/Repositories/kinetics-project/data/roundTwo/rawData/data.csv&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaGVyZShcImZvb1wiLCBcImJhclwiLCBcInRoaW5nLnR4dFwiKVxuXG5gYGAifQ== -->
+<pre class="r"><code>here(&quot;foo&quot;, &quot;bar&quot;, &quot;thing.txt&quot;)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiL2hvbWUvbGFuZG9uL0Rldi9SZXBvc2l0b3JpZXMva2luZXRpY3MtcHJvamVjdC9mb28vYmFyL3RoaW5nLnR4dFwiXG4ifQ== -->
+<pre><code>[1] &quot;/home/landon/Dev/Repositories/kinetics-project/foo/bar/thing.txt&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Let’s use this feature to create a function which reads our data
+given a file name.</p>
+<p>To define a function, we use the &lt;- operator. Then we call it by
+writing the name of the function with parentheses and passing in the
+variables we want evaluated.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc29tZV9mdW5jdGlvbiA8LSBmdW5jdGlvbih2YXJpYWJsZSkge1xuICAgICAgIyBkbyB0aGluZ3MgaGVyZVxufVxuYGBgIn0= -->
+<pre class="r"><code>some_function &lt;- function(variable) {
+      # do things here
+}</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWRkX251bWJlcnMgPC0gZnVuY3Rpb24oYSwgYikge1xuICAgICAgcmV0dXJuKGEgKyBiKVxufVxuXG5hZGRfbnVtYmVycygxLCAyKVxuYGBgIn0= -->
+<pre class="r"><code>add_numbers &lt;- function(a, b) {
+      return(a + b)
+}
+
+add_numbers(1, 2)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDNcbiJ9 -->
+<pre><code>[1] 3</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Here is what a function to read from csv might look like:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW1wb3J0X2Zyb21fY3N2IDwtIGZ1bmN0aW9uKGZpbGUsIGV4cGVyaW1lbnQpIHtcbiAgICAgIGRhdGEgPC0gcmVhZF9jc3YoXG4gICAgICAgICAgICBoZXJlKFwiZGF0YVwiLCBcInJvdW5kVHdvXCIsIFwicmF3RGF0YVwiLCBmaWxlKVxuICAgICAgKVxuXG4gICAgICByZXR1cm5fZGF0YSA8LSByZWFkX2NzdihcbiAgICAgICAgICAgIGhlcmUoXCJkYXRhXCIsIFwicm91bmRUd29cIiwgXCJyYXdEYXRhXCIsIGZpbGUpLFxuICAgICAgICAgICAgY29sX3R5cGUgPSBsaXN0KFxuICAgICAgICAgICAgICAgIC5kZWZhdWx0ID0gY29sX2RvdWJsZSgpLFxuICAgICAgICAgICAgICAgIGBUaW1lYCA9IFwidFwiXG4gICAgICAgICAgICAgICAgKVxuICAgICAgICApICU+JVxuICAgICAgICByZW5hbWVfYW5kX3JlZm9ybWF0KGV4cF9zdHJpbmcpICU+JVxuICAgICAgICBub3JtYWxpemVfYnlfY29tbW9uZmFjdG9yKCkgJT4lXG4gICAgICAgIGZpbHRlcighc3RyX2RldGVjdChncnAsIFwiMjUgUHJMRG1cIikpXG5cbiAgICByZXR1cm4ocmV0dXJuX2RhdGEpXG5cbn1cbmBgYCJ9 -->
+<pre class="r"><code>import_from_csv &lt;- function(file, experiment) {
+      data &lt;- read_csv(
+            here(&quot;data&quot;, &quot;roundTwo&quot;, &quot;rawData&quot;, file)
+      )
+
+      return_data &lt;- read_csv(
+            here(&quot;data&quot;, &quot;roundTwo&quot;, &quot;rawData&quot;, file),
+            col_type = list(
+                .default = col_double(),
+                `Time` = &quot;t&quot;
+                )
+        ) %&gt;%
+        rename_and_reformat(exp_string) %&gt;%
+        normalize_by_commonfactor() %&gt;%
+        filter(!str_detect(grp, &quot;25 PrLDm&quot;))
+
+    return(return_data)
+
+}</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiRGF0YSBBbmFseXNpcyIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgojIyBTZXR0aW5nIFVwCgpTbyB0aGUgZmlyc3QgdGhpbmcgd2UgbmVlZCB0byBkbyBpcyByZWFkIG91ciBkYXRhIGZyb20gdGhlIC5jc3YgZmlsZXMgYW5kIGNyZWF0ZSBSIGRhdGEgb2JqZWN0cyAoY2FsbGVkICJ0aWJibGVzIikgb3V0IG9mIHRoZW0uCgpXZSBiZWdpbiBieSBpbXBvcnRpbmcgdGhlIGByZWFkcmAgbGlicmFyeSBmcm9tIHRoZSBgdGlkeXZlcnNlYCBwYWNrYWdlLCB3aGljaCBhbGxvd3MgdXMgdG8gcmVhZCB2YXJpb3VzIHR5cGVzIG9mIGZpbGUgZm9ybWF0cyBlYXNpbHkuCgpXZSBhbHNvIGltcG9ydCB0aGUgYGhlcmVgIGxpYnJhcnksIHdoaWNoIGFsbG93cyB1cyB0byBpbnRlcmZhY2UgZWFzaWVyIHdpdGggb3VyIGZpbGVzeXN0ZW0uCgpPbmNlIHdlJ3ZlIGRvbmUgdGhhdCwgd2Ugd2lsbCBoYXZlIGFjY2VzcyB0byB0aGUgYHJlYWRfY3N2KClgIGFuZCB0aGUgYGhlcmUoKWAgZnVuY3Rpb25zLgoKLSAqYExpYnJhcnlgLS0tIGEgY29sbGVjdGlvbiBvZiBwcmV3cml0dGVuIGZ1bmN0aW9ucy4qCgpgYGB7cn0KbGlicmFyeShyZWFkcikKbGlicmFyeShoZXJlKQpgYGAKCkFzIHlvdSBzYXcgd2hlbiB3ZSBsb2FkZWQgdGhlIGBoZXJlYCBsaWJyYXJ5LCBgaGVyZSgpYCBzaW1wbHkgcHJpbnRzIGEgc3RyaW5nIGNvbnRhaW5pbmcgb3VyIGhvbWUgZGlyZWN0b3J5OgoKYGBge3J9CmhlcmUoKQpgYGAKCk5vdyB0aGF0IHdlIGhhdmUgb3VyIHRvb2xzIGFsbCBhcnJhbmdlZCwgd2UgbmVlZCB0byB0YWtlIGEgbG9vayBhdCBvdXIgcmF3IGRhdGEgYW5kIGNsZWFuIGl0IHVwIGEgYml0LgoKCiMjIyBEYXRhIENsZWFuaW5nCgpUaGlzIGlzIHdoYXQgb3VyIGRhdGEgbG9va3MgbGlrZSB3aGVuIHdlIGV4cG9ydCBpdCBmcm9tIGdlbjU6CgohW10oLi9pbWFnZXMvZXhjZWwucG5nKQoKCldlIHdhbnQgdG8gY2xlYW4gdGhpcyB1cCBiZWNhdXNlIHdlIGRvbid0IHdhbnQgYW55IGV4dHJhbmVvdXMgZGF0YSB3aGVuIG1hbmlwdWxhdGluZyBvdXIgZGF0YSBvYmplY3RzLgoKTGV0J3MgZGVsZXRlIHRoZSB1bm5lY2Vzc2FyeSB0ZW1wZXJhdHVyZSBjb2x1bW4gYW5kIHNhdmUgYXMgYC5jc3ZgIHRvIHJlbW92ZSB0aGUgZm9ybWF0dGluZy4KCk5vdyBvdXIgZGF0YSBpcyBjb21wYXRpYmxlIHdpdGggb3VyIGByZWFkX2NzdigpYCBmdW5jdGlvbi4KCiMjIyBJbXBvcnRpbmcgRGF0YQoKCgoKCgoKCgoKCgoKCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiRGF0YSBBbmFseXNpcyIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgojIyBTZXR0aW5nIFVwCgpTbyB0aGUgZmlyc3QgdGhpbmcgd2UgbmVlZCB0byBkbyBpcyByZWFkIG91ciBkYXRhIGZyb20gdGhlIC5jc3YgZmlsZXMgYW5kIGNyZWF0ZSBSIGRhdGEgb2JqZWN0cyAoY2FsbGVkICJ0aWJibGVzIikgb3V0IG9mIHRoZW0uCgpXZSBiZWdpbiBieSBpbXBvcnRpbmcgdGhlIGByZWFkcmAgbGlicmFyeSBmcm9tIHRoZSBgdGlkeXZlcnNlYCBwYWNrYWdlLCB3aGljaCBhbGxvd3MgdXMgdG8gcmVhZCB2YXJpb3VzIHR5cGVzIG9mIGZpbGUgZm9ybWF0cyBlYXNpbHkuCgpXZSBhbHNvIGltcG9ydCB0aGUgYGhlcmVgIGxpYnJhcnksIHdoaWNoIGFsbG93cyB1cyB0byBpbnRlcmZhY2UgZWFzaWVyIHdpdGggb3VyIGZpbGVzeXN0ZW0uCgpPbmNlIHdlJ3ZlIGRvbmUgdGhhdCwgd2Ugd2lsbCBoYXZlIGFjY2VzcyB0byB0aGUgYHJlYWRfY3N2KClgIGFuZCB0aGUgYGhlcmUoKWAgZnVuY3Rpb25zLgoKLSAqYExpYnJhcnlgLS0tIGEgY29sbGVjdGlvbiBvZiBwcmV3cml0dGVuIGZ1bmN0aW9ucy4qCgpgYGB7cn0KbGlicmFyeShyZWFkcikKbGlicmFyeShoZXJlKQpgYGAKCkFzIHlvdSBzYXcgd2hlbiB3ZSBsb2FkZWQgdGhlIGBoZXJlYCBsaWJyYXJ5LCBgaGVyZSgpYCBzaW1wbHkgcHJpbnRzIGEgc3RyaW5nIGNvbnRhaW5pbmcgb3VyIGhvbWUgZGlyZWN0b3J5OgoKYGBge3J9CmhlcmUoKQpgYGAKCk5vdyB0aGF0IHdlIGhhdmUgb3VyIHRvb2xzIGFsbCBhcnJhbmdlZCwgd2UgbmVlZCB0byB0YWtlIGEgbG9vayBhdCBvdXIgcmF3IGRhdGEgYW5kIGNsZWFuIGl0IHVwIGEgYml0LgoKCiMjIyBEYXRhIENsZWFuaW5nCgpUaGlzIGlzIHdoYXQgb3VyIGRhdGEgbG9va3MgbGlrZSB3aGVuIHdlIGV4cG9ydCBpdCBmcm9tIGdlbjU6CgohW10oLi9pbWFnZXMvZXhjZWwucG5nKQoKCldlIHdhbnQgdG8gY2xlYW4gdGhpcyB1cCBiZWNhdXNlIHdlIGRvbid0IHdhbnQgYW55IGV4dHJhbmVvdXMgZGF0YSB3aGVuIG1hbmlwdWxhdGluZyBvdXIgZGF0YSBvYmplY3RzLgoKTGV0J3MgZGVsZXRlIHRoZSB1bm5lY2Vzc2FyeSB0ZW1wZXJhdHVyZSBjb2x1bW4gYW5kIHNhdmUgYXMgYC5jc3ZgIHRvIHJlbW92ZSB0aGUgZm9ybWF0dGluZy4KCk5vdyBvdXIgZGF0YSBpcyBjb21wYXRpYmxlIHdpdGggb3VyIGByZWFkX2NzdigpYCBmdW5jdGlvbi4KCiMjIyBJbXBvcnRpbmcgRGF0YQoKV2UgbmVlZCB0byB0ZWxsIFIgd2hlcmUgb3VyIGRhdGEgaXMgaW4gb3VyIGZvbGRlciBzeXN0ZW0uIFRoYXQgbWVhbnMgd2Ugc2hvdWxkIGhhdmUgYSBkZWxpYmVyYXRlbHkgc3RydWN0dXJlZCBmb2xkZXIgc3RydWN0dXJlLiBGb3IgZXhhbXBsZSwgaW4gdGhpcyBwcm9qZWN0LCB3ZSBoYXZlIGFsbCBzYXZlZCBkYXRhLCBwcm9jZXNzZWQgb3IgcmF3LCBpbiB0aGUgYGRhdGFgIGZvbGRlci4gV2Ugc3RvcmUgZGF0YSBjb2xsZWN0ZWQgaW4gdGhlIHNlY29uZCByb3VuZCBvZiBjb2xsZWN0aW9uIGluIHRoZSBmb2xkZXIgYHJvdW5kVHdvYC4gQW5kIHRoZW4gd2UgaGF2ZSBvdXIgYFhYWF9ZWVkuY3N2YCBmaWxlcyBjb250YWluaW5nIG91ciBhY3R1YWwgZGF0YS4KCldlIGNhbiBwYXNzIHN0cmluZ3MgaW50byBgaGVyZSgpYCB0byBzcGVjaWZ5IHNwZWNpZmljIGZvbGRlcnMgb2YgdGhlIGhvbWUgZGlyZWN0b3J5OgoKYGBge3J9CmhlcmUoImRhdGEiLCAicm91bmRUd28iLCAicmF3RGF0YSIsICJkYXRhLmNzdiIpCmBgYAoKCmBgYHtyfQpoZXJlKCJmb28iLCAiYmFyIiwgInRoaW5nLnR4dCIpCmBgYAoKTGV0J3MgdXNlIHRoaXMgZmVhdHVyZSB0byBjcmVhdGUgYSBmdW5jdGlvbiB3aGljaCByZWFkcyBvdXIgZGF0YSBnaXZlbiBhIGZpbGUgbmFtZS4KClRvIGRlZmluZSBhIGZ1bmN0aW9uLCB3ZSB1c2UgdGhlIDwtIG9wZXJhdG9yLiBUaGVuIHdlIGNhbGwgaXQgYnkgd3JpdGluZyB0aGUgbmFtZSBvZiB0aGUgZnVuY3Rpb24gd2l0aCBwYXJlbnRoZXNlcyBhbmQgcGFzc2luZyBpbiB0aGUgdmFyaWFibGVzIHdlIHdhbnQgZXZhbHVhdGVkLgoKYGBge3J9CnNvbWVfZnVuY3Rpb24gPC0gZnVuY3Rpb24odmFyaWFibGUpIHsKICAgICAgIyBkbyB0aGluZ3MgaGVyZQp9CmBgYAoKYGBge3J9CmFkZF9udW1iZXJzIDwtIGZ1bmN0aW9uKGEsIGIpIHsKICAgICAgcmV0dXJuKGEgKyBiKQp9CgphZGRfbnVtYmVycygxLCAyKQpgYGAKCkhlcmUgaXMgd2hhdCBhIGZ1bmN0aW9uIHRvIHJlYWQgZnJvbSBjc3YgbWlnaHQgbG9vayBsaWtlOgoKYGBge3J9CmltcG9ydF9mcm9tX2NzdiA8LSBmdW5jdGlvbihmaWxlLCBleHBlcmltZW50KSB7CiAgICAgIGRhdGEgPC0gcmVhZF9jc3YoCiAgICAgICAgICAgIGhlcmUoImRhdGEiLCAicm91bmRUd28iLCAicmF3RGF0YSIsIGZpbGUpCiAgICAgICkKCiAgICAgIHJldHVybl9kYXRhIDwtIHJlYWRfY3N2KAogICAgICAgICAgICBoZXJlKCJkYXRhIiwgInJvdW5kVHdvIiwgInJhd0RhdGEiLCBmaWxlKSwKICAgICAgICAgICAgY29sX3R5cGUgPSBsaXN0KAogICAgICAgICAgICAgICAgLmRlZmF1bHQgPSBjb2xfZG91YmxlKCksCiAgICAgICAgICAgICAgICBgVGltZWAgPSAidCIKICAgICAgICAgICAgICAgICkKICAgICAgICApICU+JQogICAgICAgIHJlbmFtZV9hbmRfcmVmb3JtYXQoZXhwX3N0cmluZykgJT4lCiAgICAgICAgbm9ybWFsaXplX2J5X2NvbW1vbmZhY3RvcigpICU+JQogICAgICAgIGZpbHRlcighc3RyX2RldGVjdChncnAsICIyNSBQckxEbSIpKQoKICAgIHJldHVybihyZXR1cm5fZGF0YSkKCn0KYGBgCgoKCgoKCgoKCgoKCgo=</div>
 
 
 
