@@ -126,11 +126,7 @@ pivot_and_group <- function(data, exp_id) {
             
       pivot_longer(cols = !`Time`, names_to = "grp") %>%
       mutate(exp = exp_id) %>%
-      # unite(
-      #       col = "id",
-      #       c(exp, grp),
-      #       sep = " | ",
-      #       remove = FALSE) %>%
+      
       separate(
             grp,
             into = c(
@@ -140,10 +136,17 @@ pivot_and_group <- function(data, exp_id) {
                   "monomer_type",
                   "replicate"),
             sep = " ",
-            remove = FALSE,
             convert = TRUE,
             fill = "right",
             extra = "drop") %>%
+      unite("exp", c(exp, replicate), sep = " ", remove = FALSE) %>%
+      unite("id", c(grp, exp), sep = "|", remove = FALSE) %>%
+      unite(
+            "reaction",
+            c(fibril_conc, fibril_type, monomer_conc, monomer_type),
+            sep = " ",
+            remove = FALSE) %>%
+      
       drop_na(`Time`, `value`) %>%
       mutate(hours = as.duration(`Time`), .before = 1) %>%
       group_by(fibril_type, fibril_conc, monomer_type, monomer_conc) %>%
@@ -151,25 +154,23 @@ pivot_and_group <- function(data, exp_id) {
       filter(hours <= hours(48))
 }
 
-# normalizes columns by a factor f for each column such that f*colmin == grpmin
 normalize_by_commonfactor <- function(data) {
+
+      
       data %>%
 
       # find the min for each individual reaction
       
-      ungroup() %>%
       group_by(exp, grp) %>%
       mutate(min_col = min(value, na.rm = TRUE)) %>%
       
       # find the min for each stoichiometry
       
-      ungroup() %>%
       group_by(fibril_conc, fibril_type, monomer_conc, monomer_type) %>%
       mutate(min_grp = min(value, na.rm = TRUE)) %>%
       
       # multiply each reaction by the factor so that min(rxn) == min(grp)
       
-      ungroup() %>%
       group_by(exp, grp) %>%
       mutate(factor = min_col / min_grp) %>%
       mutate(fnorm_value = value / factor) %>%
@@ -180,15 +181,15 @@ normalize_by_commonfactor <- function(data) {
 
       # normalize from 0 to 1            
 
-      mutate(max_col = max(fnorm_value, na.rm = TRUE)) %>%
-      mutate(fnorm_value = fnorm_value / max_col) %>%
+#      mutate(max_col = max(fnorm_value, na.rm = TRUE)) %>%
+#      mutate(fnorm_value = fnorm_value / max_col) %>%
 
       # remove the temporary columns
             
       ungroup() %>%
-      select(-min_col, -max_col, -min_grp, -factor, -value)
+      select(hours, Time, grp, fibril_conc, fibril_type, monomer_conc,
+             monomer_type, replicate, exp, fnorm_value)
 }
-
 
 process_data <- function(exp_id, normalize = TRUE, filter = TRUE) {
 
@@ -205,36 +206,53 @@ process_data <- function(exp_id, normalize = TRUE, filter = TRUE) {
 
       }
 
-# # # # # # # # # # # # # # # # # # 
-test <- read_data("030_156") %>%
+x030_156 <- read_data("030_156") %>%
       relabel_data("030_156") %>%
-      pivot_and_group("030_156") %>%
-      normalize_by_commonfactor()
-test %>%
-      filter(!str_detect(grp, stringr::fixed("00 asm"))) %>%
-      filter(!str_detect(grp, stringr::fixed("00 prldm"))) %>%
-      printplot_temp("02 hf", group = replicate)
-# # # # # # # # # # # # # # # # # #
-test <- read_data("030_157") %>%
+      pivot_and_group("030_156")
+x030_157 <- read_data("030_157") %>%
       relabel_data("030_157") %>%
-      pivot_and_group("030_157") %>%
-      normalize_by_commonfactor()
-test
-# # # # # # # # # # # # # # # # # # 
-test <- read_data("030_152") %>%
-      relabel_data("030_152") %>%
-      pivot_and_group("030_152") %>%
-      normalize_by_commonfactor()
-test
-# # # # # # # # # # # # # # # # # # 
+      pivot_and_group("030_157")
 
-x030_152 <- process_data("030_152")
-x030_152
-
-no_normal_x030_156 <- process_data("030_156", normalize = FALSE)
-x030_156 <- process_data("030_156")
-x030_156
-
-no_normal_x030_157 <- process_data("030_157", normalize = FALSE)
-x030_157 <- process_data("030_157")
-x030_157
+bind_rows(x030_156, x030_157) %>%
+      
+      unite("exp", c(exp, replicate)) %>%
+      
+      filter(!id == "02 hf 20 prldm B|030_156") %>%
+      
+      group_by(id) %>%
+            mutate(max_col = max(value, na.rm = TRUE)) %>%
+      
+      
+      group_by(exp) %>%
+            mutate(max_exp = max(max_col)) %>%
+            mutate(min_exp = min(max_col)) %>%
+            mutate(deviation = max_exp - min_exp) %>%
+      
+      ungroup() %>%
+            mutate(max_dev = max(deviation)) %>%
+            mutate(factor = deviation / max_dev) %>%# group_by(exp, factor) %>% summarise()
+      
+      group_by(id) %>%
+            mutate(value = value / factor) %>%# View()
+            
+      group_by(hours, reaction) %>%
+            mutate(mean = mean(value)) %>%
+            mutate(sd = sd(value)) %>%
+      
+            mutate(value = mean) %>%
+      
+      filter(monomer_type == "asm") %>%
+      filter(monomer_conc >= 15) %>%
+      filter(hours <=hours(24)) %>%
+      filter(!fibril_conc == 0) %>%
+      # filter(exp == "030_157_B") %>%
+      
+      ggplot(aes(x = hours / 3600, y = value, group = reaction,
+                 color = reaction)) +
+      geom_errorbar(aes(ymin = value - sd, ymax = value + sd), width = 0.2) +
+      geom_point() +
+      
+      labs(title = "average") +
+      # labs(title = "normalized | 15, 20 asm") +
+      # labs(title = "raw data | 15, 20 asm") +
+      geom_line()
