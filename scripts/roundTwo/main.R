@@ -8,233 +8,229 @@ library(here)
 
 here()
 
-reformat_raw <- function(exp_name, data) {
-    d <- deparse(substitute(data)) # nolint
 
-    data %>%
-    pivot_longer(
-        cols = !`Time`, # nolint
-        names_to = "grp"
-    ) %>%
-    mutate(
-        exp = exp_name,
-        grp_asf = as.numeric(str_extract(grp, "\\d+(?=\\s+aSf)")), # extract number before " aSf" # nolint
-        grp_prldm = as.numeric(str_extract(grp, "\\d+(?=\\s+PrLDm)")) # extract number before " PrLDm" # nolint
-    ) %>%
-
-    drop_na(`Time`, `value`) %>% # nolint
-
-    mutate(hours = as.duration(`Time`), .before = 1) %>% # nolint
-    group_by(grp) %>% # nolint
-    mutate(hours = (hours - min(hours))) %>%
-    filter(hours <= hours(48))
+read_data <- function(exp_id) {
+      file <- paste0(exp_id, ".csv")
+      
+      return_data <- read_csv(
+            here("data", "roundTwo", "rawData", file),
+            col_type = list(
+                  .default = col_double(),
+                  `Time` = "t"
+                  )
+            ) %>%
+      return()
 }
-rename_and_reformat <- function(data, exp_name) {
+
+relabel_data <- function(data, exp_id) {
+      
+      exp_name <- paste0("x", exp_id)
+      
       if (exp_name == "x030_152") { # round2
             data %>%
                   rename(
-                      "01 aSf 00 PrLDm" = "H12",
-                      "01 aSf 05 PrLDm" = "H11",
-                      "01 aSf 10 PrLDm" = "H10",
-                      "01 aSf 15 PrLDm" = "H9",
-                      "01 aSf 20 PrLDm" = "H8",
-                      "01 aSf 25 PrLDm" = "H7",
-                      "02 aSf 00 PrLDm" = "H6",
-                      "02 aSf 05 PrLDm" = "H5",
-                      "02 aSf 10 PrLDm" = "H4",
-                      "02 aSf 15 PrLDm" = "H3",
-                      "02 aSf 20 PrLDm" = "H2",
-                      "02 aSf 25 PrLDm" = "H1",
-                      "04 aSf 00 PrLDm" = "G12",
-                      "04 aSf 05 PrLDm" = "G11",
-                      "04 aSf 10 PrLDm" = "G10",
-                      "04 aSf 15 PrLDm" = "G9",
-                      "04 aSf 20 PrLDm" = "G8",
-                      "04 aSf 25 PrLDm" = "G7",
-                      "00 aSf 05 PrLDm" = "G6",
-                      "00 aSf 10 PrLDm" = "G5",
-                      "00 aSf 15 PrLDm" = "G4",
-                      "00 aSf 20 PrLDm" = "G3",
-                      "00 aSf 25 PrLDm" = "G2",
-                      "00 aSf 00 PrLDm" = "G1"
+                      "01 asf 00 prldm" = "H12",
+                      "01 asf 05 prldm" = "H11",
+                      "01 asf 10 prldm" = "H10",
+                      "01 asf 15 prldm" = "H9",
+                      "01 asf 20 prldm" = "H8",
+                      "01 asf 25 prldm" = "H7",
+                      "02 asf 00 prldm" = "H6",
+                      "02 asf 05 prldm" = "H5",
+                      "02 asf 10 prldm" = "H4",
+                      "02 asf 15 prldm" = "H3",
+                      "02 asf 20 prldm" = "H2",
+                      "02 asf 25 prldm" = "H1",
+                      "04 asf 00 prldm" = "G12",
+                      "04 asf 05 prldm" = "G11",
+                      "04 asf 10 prldm" = "G10",
+                      "04 asf 15 prldm" = "G9",
+                      "04 asf 20 prldm" = "G8",
+                      "04 asf 25 prldm" = "G7",
+                      "00 asf 05 prldm" = "G6",
+                      "00 asf 10 prldm" = "G5",
+                      "00 asf 15 prldm" = "G4",
+                      "00 asf 20 prldm" = "G3",
+                      "00 asf 25 prldm" = "G2",
+                      "00 asf 00 prldm" = "G1"
                   ) %>%
-                  reformat_raw(exp = exp_name)
-
+                  return()
       } else if (exp_name == "x030_157") { # hybrid1
             data %>%
                   rename(
-                      "2 hf 00 asm" = "A1",
-                      "2 hf 05 asm" = "A2",
-                      "2 hf 10 asm" = "A3",
-                      "2 hf 15 asm" = "A4",
-                      "2 hf 20 asm" = "A5",
-                      "0 hf 10 asm" = "A6",
-                      "0 hf 15 asm" = "A7",
-                      "2 hf 00 asm" = "B1",
-                      "2 hf 05 asm" = "B2",
-                      "2 hf 10 asm" = "B3",
-                      "2 hf 15 asm" = "B4",
-                      "2 hf 20 asm" = "B5",
-                      "0 hf 10 asm" = "B6",
-                      "0 hf 15 asm" = "B7",
-                      "2 hf 00 prldm" = "C1",
-                      "2 hf 05 prldm" = "C2",
-                      "2 hf 10 prldm" = "C3",
-                      "2 hf 15 prldm" = "C4",
-                      "2 hf 20 prldm" = "C5",
-                      "0 hf 10 prldm" = "C6",
-                      "0 hf 15 prldm" = "C7",
-                      "2 hf 00 prldm" = "D1",
-                      "2 hf 05 prldm" = "D2",
-                      "2 hf 10 prldm" = "D3",
-                      "2 hf 15 prldm" = "D4",
-                      "2 hf 20 prldm" = "D5",
-                      "0 hf 10 prldm" = "D6",
-                      "0 hf 15 prldm" = "D7"
+                      "02 hf 00 asm A" = "A1",
+                      "02 hf 05 asm A" = "A2",
+                      "02 hf 10 asm A" = "A3",
+                      "02 hf 15 asm A" = "A4",
+                      "02 hf 20 asm A" = "A5",
+                      "00 hf 10 asm A" = "A6",
+                      "00 hf 15 asm A" = "A7",
+                      "02 hf 00 asm B" = "B1",
+                      "02 hf 05 asm B" = "B2",
+                      "02 hf 10 asm B" = "B3",
+                      "02 hf 15 asm B" = "B4",
+                      "02 hf 20 asm B" = "B5",
+                      "00 hf 10 asm B" = "B6",
+                      "00 hf 15 asm B" = "B7",
+                      "02 hf 00 prldm A" = "C1",
+                      "02 hf 05 prldm A" = "C2",
+                      "02 hf 10 prldm A" = "C3",
+                      "02 hf 15 prldm A" = "C4",
+                      "02 hf 20 prldm A" = "C5",
+                      "00 hf 10 prldm A" = "C6",
+                      "00 hf 15 prldm A" = "C7",
+                      "02 hf 00 prldm B" = "D1",
+                      "02 hf 05 prldm B" = "D2",
+                      "02 hf 10 prldm B" = "D3",
+                      "02 hf 15 prldm B" = "D4",
+                      "02 hf 20 prldm B" = "D5",
+                      "00 hf 10 prldm B" = "D6",
+                      "00 hf 15 prldm B" = "D7"
                   ) %>%
-                  reformat_raw(exp = exp_name)
+                  return()
       } else if (exp_name == "x030_156") { # hybrid1
             data %>%
                   rename(
-                      "2 hf 00 asm A" = "A1",
-                      "2 hf 05 asm A" = "A2",
-                      "2 hf 10 asm A" = "A3",
-                      "2 hf 15 asm A" = "A4",
-                      "2 hf 20 asm A" = "A5",
-                      "2 hf 00 asm B" = "A6",
-                      "2 hf 05 asm B" = "A7",
-                      "2 hf 10 asm B" = "A8",
-                      "2 hf 15 asm B" = "A9",
-                      "2 hf 20 asm B" = "A10",
-                      "2 hf 00 prldm A" = "B1",
-                      "2 hf 05 prldm A" = "B2",
-                      "2 hf 10 prldm A" = "B3",
-                      "2 hf 15 prldm A" = "B4",
-                      "2 hf 20 prldm A" = "B5",
-                      "2 hf 00 prldm B" = "B6",
-                      "2 hf 05 prldm B" = "B7",
-                      "2 hf 10 prldm B" = "B8",
-                      "2 hf 15 prldm B" = "B9",
-                      "2 hf 20 prldm B" = "B10",
+                      "02 hf 00 asm A" = "A1",
+                      "02 hf 05 asm A" = "A2",
+                      "02 hf 10 asm A" = "A3",
+                      "02 hf 15 asm A" = "A4",
+                      "02 hf 20 asm A" = "A5",
+                      "02 hf 00 asm B" = "A6",
+                      "02 hf 05 asm B" = "A7",
+                      "02 hf 10 asm B" = "A8",
+                      "02 hf 15 asm B" = "A9",
+                      "02 hf 20 asm B" = "A10",
+                      "02 hf 00 prldm A" = "B1",
+                      "02 hf 05 prldm A" = "B2",
+                      "02 hf 10 prldm A" = "B3",
+                      "02 hf 15 prldm A" = "B4",
+                      "02 hf 20 prldm A" = "B5",
+                      "02 hf 00 prldm B" = "B6",
+                      "02 hf 05 prldm B" = "B7",
+                      "02 hf 10 prldm B" = "B8",
+                      "02 hf 15 prldm B" = "B9",
+                      "02 hf 20 prldm B" = "B10",
                   ) %>%
-                  reformat_raw(exp = exp_name)
-
-      } else if (exp_name == "x030_157") { # hybrid2
-            data %>%
-                  rename(
-                        "2 hf 00 asm A" = "A1",
-                        "2 hf 05 asm A" = "A2",
-                        "2 hf 10 asm A" = "A3",
-                        "2 hf 15 asm A" = "A4",
-                        "2 hf 20 asm A" = "A5",
-                        "0 hf 10 asm A" = "A6",
-                        "0 hf 15 asm A" = "A7",
-                        "2 hf 00 asm B" = "B1",
-                        "2 hf 05 asm B" = "B2",
-                        "2 hf 10 asm B" = "B3",
-                        "2 hf 15 asm B" = "B4",
-                        "2 hf 20 asm B" = "B5",
-                        "0 hf 10 asm B" = "B6",
-                        "0 hf 15 asm B" = "B7",
-                        "2 hf 00 prldm A" = "C1",
-                        "2 hf 05 prldm A" = "C2",
-                        "2 hf 10 prldm A" = "C3",
-                        "2 hf 15 prldm A" = "C4",
-                        "2 hf 20 prldm A" = "C5",
-                        "0 hf 10 prldm A" = "C6",
-                        "0 hf 15 prldm A" = "C7",
-                        "2 hf 00 prldm B" = "D1",
-                        "2 hf 05 prldm B" = "D2",
-                        "2 hf 10 prldm B" = "D3",
-                        "2 hf 15 prldm B" = "D4",
-                        "2 hf 20 prldm B" = "D5",
-                        "0 hf 10 prldm B" = "D6",
-                        "0 hf 15 prldm B" = "D7"
-                  ) %>%
-                  reformat_raw(exp = exp_name)
+                  return()
       } else {
         print("No case found.")
     }
 }
-normalize_by_commonfactor <- function(data) {
-    data %>%
-    group_by(hours, grp) %>% # nolint
-    unite(
-        col = "id",
-        c(grp, exp),
-        sep = "_",
-        remove = FALSE) %>%
 
-    # normalize columns by a factor f for each column such that f*colmin=grpmin
-
-        # find the min for each individual reaction
-    ungroup() %>%
-    group_by(id) %>%
-    mutate(min_col = min(value, na.rm = TRUE)) %>% # nolint
-
-        # find the min for each stoichiometry
-    ungroup() %>%
-    group_by(grp) %>%
-    mutate(min_grp = min(value, na.rm = TRUE)) %>%
-
-        # multiply each reaction by the factor which will make
-        # the min of the reaction equal the min of the stoichiometry
-    ungroup() %>%
-    group_by(grp, id) %>%
-    mutate(factor = min_col / min_grp) %>% # nolint
-    mutate(fnorm_value = value / factor) %>%
-
-        # remove the temporary columns
-    select(-min_col, -min_grp, -factor, -value) %>%
-
-    # zero-correct and normalize by id from 0 to 1
-
-    group_by(id) %>%
-    mutate(min_col = min(fnorm_value, na.rm = TRUE)) %>% # nolint
-    mutate(fnorm_value = fnorm_value - min_col) %>%
-    mutate(max_col = max(fnorm_value, na.rm = TRUE)) %>%
-    mutate(fnorm_value = fnorm_value / max_col) %>% # nolint
-    select(-min_col, -max_col)
-}
-process_experimental_data <- function(
-      exp, normalize = TRUE, fibril = "asf", monomer = "prldm"
-      ) {
-            file <- paste0(exp, ".csv")
-            exp_string <- paste0("x", exp)
+pivot_and_group <- function(data, exp_id) {
+      d <- deparse(substitute(data))
+      exp_name <- paste0("x", exp_id)
+      
+      data %>%
             
-            return_data <- read_csv(
-                  here("data", "roundTwo", "rawData", file),
-                        col_type = list(
-                        .default = col_double(),
-                        `Time` = "t"
-                  )
-            ) %>%
+      pivot_longer(cols = !`Time`, names_to = "grp") %>%
+      mutate(exp = exp_id) %>%
+      # unite(
+      #       col = "id",
+      #       c(exp, grp),
+      #       sep = " | ",
+      #       remove = FALSE) %>%
+      separate(
+            grp,
+            into = c(
+                  "fibril_conc",
+                  "fibril_type",
+                  "monomer_conc",
+                  "monomer_type",
+                  "replicate"),
+            sep = " ",
+            remove = FALSE,
+            convert = TRUE,
+            fill = "right",
+            extra = "drop") %>%
+      drop_na(`Time`, `value`) %>%
+      mutate(hours = as.duration(`Time`), .before = 1) %>%
+      group_by(fibril_type, fibril_conc, monomer_type, monomer_conc) %>%
+      mutate(hours = hours - min(hours)) %>%
+      filter(hours <= hours(48))
+}
 
-            rename_and_reformat(exp_string) %>%
+# normalizes columns by a factor f for each column such that f*colmin == grpmin
+normalize_by_commonfactor <- function(data) {
+      data %>%
+
+      # find the min for each individual reaction
+      
+      ungroup() %>%
+      group_by(exp, grp) %>%
+      mutate(min_col = min(value, na.rm = TRUE)) %>%
+      
+      # find the min for each stoichiometry
+      
+      ungroup() %>%
+      group_by(fibril_conc, fibril_type, monomer_conc, monomer_type) %>%
+      mutate(min_grp = min(value, na.rm = TRUE)) %>%
+      
+      # multiply each reaction by the factor so that min(rxn) == min(grp)
+      
+      ungroup() %>%
+      group_by(exp, grp) %>%
+      mutate(factor = min_col / min_grp) %>%
+      mutate(fnorm_value = value / factor) %>%
+      
+      # zero-correct
+      
+      mutate(fnorm_value = fnorm_value - min_col) %>%
+
+      # normalize from 0 to 1            
+
+      mutate(max_col = max(fnorm_value, na.rm = TRUE)) %>%
+      mutate(fnorm_value = fnorm_value / max_col) %>%
+
+      # remove the temporary columns
+            
+      ungroup() %>%
+      select(-min_col, -max_col, -min_grp, -factor, -value)
+}
+
+
+process_data <- function(exp_id, normalize = TRUE, fibril, monomer) {
+            
+            read_data(exp_id) %>%
+            
+            relabel_data(exp_id) %>%
+            
             { if (normalize) normalize_by_commonfactor(.) else . } %>%
             filter(!str_detect(grp, "25 PrLDm"))
-      
-          return(return_data)
+            
+            return(return_data)
 
       }
 
+# # # # # # # # # # # # # # # # # # 
+test <- read_data("030_156") %>%
+      relabel_data("030_156") %>%
+      pivot_and_group("030_156") %>%
+      normalize_by_commonfactor()
+test %>%
+      filter(!str_detect(grp, stringr::fixed("00 asm"))) %>%
+      filter(!str_detect(grp, stringr::fixed("00 prldm"))) %>%
+      printplot_temp("02 hf", group = replicate)
+# # # # # # # # # # # # # # # # # #
+test <- read_data("030_157") %>%
+      relabel_data("030_157") %>%
+      pivot_and_group("030_157") %>%
+      normalize_by_commonfactor()
+test
+# # # # # # # # # # # # # # # # # # 
+test <- read_data("030_152") %>%
+      relabel_data("030_152") %>%
+      pivot_and_group("030_152") %>%
+      normalize_by_commonfactor()
+test
+# # # # # # # # # # # # # # # # # # 
 
-
-x030_152 <- process_experimental_data("030_152")
+x030_152 <- process_data("030_152")
 x030_152
 
-x030_156 <- process_experimental_data(
-      "030_156.csv",
-      "x030_156",
-      normalize = FALSE,
-      type = "hf"
-      )
+x030_156 <- process_data("030_156", normalize = FALSE)
 x030_156
 
-x030_157 <- process_experimental_data(
-      "030_157.csv",
-      "x030_157",
-      normalize = FALSE,
-      type = "hf"
-      )
+x030_157 <- process_data("030_157", normalize = FALSE)
 x030_157

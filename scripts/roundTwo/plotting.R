@@ -6,12 +6,12 @@ library(here)
 # Source data
 source(here("scripts", "roundTwo", "main.R"))
 
-printplot_temp <- function(df, filter) {
+printplot_temp <- function(df, filter, group = grp) {
     p <- df %>%
     ungroup %>%
-    filter(str_detect(grp, stringr::fixed(filter))) %>% # nolint
+    filter(str_detect(grp, stringr::fixed(filter))) %>%
 
-    ggplot(aes(x = hours / 3600, y = fnorm_value, color = grp)) + # nolint
+    ggplot(aes(x = hours / 3600, y = fnorm_value, color = grp)) +
     geom_point() +
     geom_line() +
     labs(
