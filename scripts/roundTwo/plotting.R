@@ -11,7 +11,7 @@ printplot_temp <- function(df, filter, group = grp) {
     ungroup %>%
     filter(str_detect(grp, stringr::fixed(filter))) %>%
 
-    ggplot(aes(x = hours / 3600, y = fnorm_value, color = grp)) +
+    ggplot(aes(x = hours / 3600, y = value, color = grp)) +
     geom_point() +
     geom_line() +
     labs(
@@ -51,3 +51,6 @@ printplot("10 PrLDm", "/x030_152/PrLDm/", x030_152)
 printplot("15 PrLDm", "/x030_152/PrLDm/", x030_152)
 printplot("20 PrLDm", "/x030_152/PrLDm/", x030_152)
 printplot("25 PrLDm", "/x030_152/PrLDm/", x030_152)
+
+
+

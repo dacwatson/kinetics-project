@@ -104,6 +104,49 @@ import_from_csv <- function(file, experiment) {
 
 
 
+```{r}
+bind_rows(x030_156, x030_157)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

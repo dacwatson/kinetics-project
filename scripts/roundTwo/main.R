@@ -190,15 +190,17 @@ normalize_by_commonfactor <- function(data) {
 }
 
 
-process_data <- function(exp_id, normalize = TRUE, fibril, monomer) {
-            
+process_data <- function(exp_id, normalize = TRUE, filter = TRUE) {
+
             read_data(exp_id) %>%
-            
+
             relabel_data(exp_id) %>%
-            
+
+            pivot_and_group(exp_id) %>%
+
             { if (normalize) normalize_by_commonfactor(.) else . } %>%
-            filter(!str_detect(grp, "25 PrLDm"))
-            
+            { if (filter) . else filter(!str_detect(grp, filter)) } %>%
+
             return(return_data)
 
       }
@@ -229,8 +231,10 @@ test
 x030_152 <- process_data("030_152")
 x030_152
 
-x030_156 <- process_data("030_156", normalize = FALSE)
+no_normal_x030_156 <- process_data("030_156", normalize = FALSE)
+x030_156 <- process_data("030_156")
 x030_156
 
-x030_157 <- process_data("030_157", normalize = FALSE)
+no_normal_x030_157 <- process_data("030_157", normalize = FALSE)
+x030_157 <- process_data("030_157")
 x030_157
