@@ -1,9 +1,12 @@
 # Individual Data Plots
 
-printplot_p1 <- function(df, conc, monomer, group = grp) {
+printplot_p1 <- function(df, conc = TRUE, monomer = TRUE, group = grp) {
       p <- df %>%
-      filter(monomer_type == monomer) %>%
-      filter(monomer_conc == conc) %>%
+      { if(!conc && !monomer) { 
+            filter(monomer_type == monomer && monomer_conc == conc) 
+            }
+            else . 
+      } %>%
             
       ggplot(aes(x = hours / 3600, y = fnorm_value, color = id)) +
       geom_point() +
@@ -13,7 +16,8 @@ printplot_p1 <- function(df, conc, monomer, group = grp) {
       labs(
             x = "Time (hours)",
             y = "Fluorescence",
-            title = paste0("Fluorescence of reactions containing ", conc, " ", monomer),
+            title = paste0("Fluorescence of reactions containing ",
+                  conc, " ", monomer),
             color = "Reaction Group"
             ) +
       coord_cartesian(xlim = c(0, 48)) +
@@ -25,7 +29,8 @@ return(p)
 p_1 <- bind_rows(x030_156, x030_157) %>%
       filter(!fibril_conc == 0) %>%
       group_by(monomer_type, monomer_conc, hours) %>%
-      unite("id", c(grp, exp), sep = "|", remove = FALSE)
+      unite("id", c(grp, exp), sep = "|", remove = FALSE) %>%
+      mutate(value = fnorm_value)
 p_1
 
 p_1n <- bind_rows(no_normal_x030_156, no_normal_x030_157) %>%
@@ -133,8 +138,12 @@ p_2 %>%
       filter(monomer_type == "prldm") %>%
       filter(hours <= hours(24)) %>%
       filter(hours >= hours(5)) %>%
-      printplot_p3("2 hf")
+      printplot_p3("2 hf") %>%
+      save_plot("/hybrid/prldm.png")
+      
 p_2 %>%
       filter(!monomer_conc == 0) %>%
       filter(monomer_type == "asm") %>%
-      printplot_p3("2 hf")
+      printplot_p3("2 hf") %>%
+      save_plot("/hybrid/asm.png")
+

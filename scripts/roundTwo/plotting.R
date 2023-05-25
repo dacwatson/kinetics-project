@@ -6,10 +6,11 @@ library(here)
 # Source data
 source(here("scripts", "roundTwo", "main.R"))
 
-printplot_temp <- function(df, filter, group = grp) {
+printplot_temp <- function(df, filter = TRUE, group = grp) {
     p <- df %>%
     ungroup %>%
-    filter(str_detect(grp, stringr::fixed(filter))) %>%
+    { if(filter == TRUE) . 
+          else filter(str_detect(grp, stringr::fixed(filter))) } %>%
 
     ggplot(aes(x = hours / 3600, y = value, color = grp)) +
     geom_point() +
@@ -29,7 +30,7 @@ printplot_temp <- function(df, filter, group = grp) {
 # `folder` path supplied, filtering `grp` for the string provided in `filter`.
 save_plot <- function(p, filter, folder) {
 
-    filename <- paste0(here(), "/plots/roundTwo", folder, filter, ".png")
+    filename <- paste0(here(), "/plots", folder, filter, ".png")
     ggsave(filename, plot = p, width = 8, height = 4, dpi = 240)
 }
 printplot <- function(df, folder, filter) {
@@ -39,6 +40,8 @@ printplot <- function(df, folder, filter) {
 
     p %>% save_plot(filter, folder)
 }
+
+save_plot("/hybrid/.png")
 
 printplot("00 aSf", "/x030_152/aSf/", x030_152)
 printplot("01 aSf", "/x030_152/aSf/", x030_152)
