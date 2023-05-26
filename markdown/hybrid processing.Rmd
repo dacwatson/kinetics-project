@@ -1,0 +1,33 @@
+```{r}
+library(here)
+here()
+source(here("scripts", "roundTwo", "main.R"))
+```
+
+Read the .csv files into data 
+
+```{r}
+x030_156 <- read_data("030_156") %>%
+      relabel_data("030_156") %>%
+      pivot_and_group("030_156")
+x030_157 <- read_data("030_157") %>%
+      relabel_data("030_157") %>%
+      pivot_and_group("030_157")
+
+df <- bind_rows(x030_156, x030_157)
+df %>% View()
+
+df %>% 
+      filter(exp == "030_156") %>%       
+      
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+                 color = exp)) +
+      # geom_errorbar(aes(ymin = value - sd, ymax = value + sd), width = 0.2) +
+      geom_point() +
+      
+      labs(title = "Normalized | by Rxn | 15 20 uM") +
+      # labs(title = "normalized | 15, 20 asm") +
+      # labs(title = "raw data | 15, 20 asm") +
+      geom_line()
+```
+

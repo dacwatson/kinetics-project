@@ -5,6 +5,7 @@ library(hablar)
 library(stringr)
 library(lubridate)
 library(here)
+library(ggplot2)
 
 here()
 
@@ -139,14 +140,15 @@ pivot_and_group <- function(data, exp_id) {
             convert = TRUE,
             fill = "right",
             extra = "drop") %>%
-      unite("exp", c(exp, replicate), sep = " ", remove = FALSE) %>%
-      unite("id", c(grp, exp), sep = "|", remove = FALSE) %>%
+      unite("exp", c(exp, replicate), sep = " ") %>%
       unite(
             "reaction",
             c(fibril_conc, fibril_type, monomer_conc, monomer_type),
             sep = " ",
-            remove = FALSE) %>%
-      
+            remove = FALSE
+            ) %>%
+      unite("id", c(reaction, exp), sep = " ", remove = FALSE) %>%
+
       drop_na(`Time`, `value`) %>%
       mutate(hours = as.duration(`Time`), .before = 1) %>%
       group_by(fibril_type, fibril_conc, monomer_type, monomer_conc) %>%
@@ -215,9 +217,7 @@ x030_157 <- read_data("030_157") %>%
 
 bind_rows(x030_156, x030_157) %>%
       
-      unite("exp", c(exp, replicate)) %>%
-      
-      filter(!id == "02 hf 20 prldm B|030_156") %>%
+      filter(!id == "2 hf 20 prldm 030_156 B") %>%
       
       group_by(id) %>%
             mutate(max_col = max(value, na.rm = TRUE)) %>%
@@ -233,26 +233,27 @@ bind_rows(x030_156, x030_157) %>%
             mutate(factor = deviation / max_dev) %>%# group_by(exp, factor) %>% summarise()
       
       group_by(id) %>%
-            mutate(value = value / factor) %>%# View()
-            
-      group_by(hours, reaction) %>%
-            mutate(mean = mean(value)) %>%
-            mutate(sd = sd(value)) %>%
-      
-            mutate(value = mean) %>%
+            # mutate(value = value / factor) %>%# View()
+
+      # group_by(hours, reaction) %>%
+      #       mutate(mean = mean(value)) %>%
+      #       mutate(sd = sd(value)) %>%
+      # 
+      #       mutate(value = mean) %>%
       
       filter(monomer_type == "asm") %>%
-      filter(monomer_conc >= 15) %>%
-      filter(hours <=hours(24)) %>%
+      filter(monomer_conc <= 10) %>%
+      filter(!monomer_conc == 0) %>%
+      filter(hours <= hours(24)) %>%
       filter(!fibril_conc == 0) %>%
-      # filter(exp == "030_157_B") %>%
+      # filter(exp == "030_156 B") %>%
       
-      ggplot(aes(x = hours / 3600, y = value, group = reaction,
-                 color = reaction)) +
-      geom_errorbar(aes(ymin = value - sd, ymax = value + sd), width = 0.2) +
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+                 color = exp)) +
+      # geom_errorbar(aes(ymin = value - sd, ymax = value + sd), width = 0.2) +
       geom_point() +
       
-      labs(title = "average") +
+      labs(title = "Normalized | by rxn | 15 20 uM") +
       # labs(title = "normalized | 15, 20 asm") +
       # labs(title = "raw data | 15, 20 asm") +
       geom_line()
