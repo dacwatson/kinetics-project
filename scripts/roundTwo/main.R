@@ -120,7 +120,7 @@ relabel_data <- function(data, exp_id) {
 }
 
 pivot_and_group <- function(data, exp_id) {
-      d <- deparse(substitute(data))
+
       exp_name <- paste0("x", exp_id)
       
       data %>%
@@ -156,44 +156,49 @@ pivot_and_group <- function(data, exp_id) {
       filter(hours <= hours(48))
 }
 
-normalize_by_commonfactor <- function(data) {
+normalize_by_commonfactor <- function(data, normalize = TRUE) {
 
+      if (normalize) {
+            data %>%
+                  group_by(id) %>%
+                        mutate(max_col = max(value, na.rm = TRUE)) %>%
+                        mutate(min_col = min(value, na.rm = TRUE)) %>%
+                        mutate(value = value - min_col, na.rm = TRUE) %>%
       
-      data %>%
+                  group_by(exp) %>%
+                        mutate(max_exp = max(max_col)) %>%
+                        mutate(min_exp = min(max_col)) %>%
+                        mutate(deviation = max_exp - min_exp) %>%
+      
+                  ungroup() %>%
+                        mutate(max_dev = max(deviation)) %>%
+                        mutate(factor = deviation / max_dev) %>%
+      
+                  group_by(id) %>%
+                        mutate(value = value / factor) %>%
 
-      # find the min for each individual reaction
-      
-      group_by(exp, grp) %>%
-      mutate(min_col = min(value, na.rm = TRUE)) %>%
-      
-      # find the min for each stoichiometry
-      
-      group_by(fibril_conc, fibril_type, monomer_conc, monomer_type) %>%
-      mutate(min_grp = min(value, na.rm = TRUE)) %>%
-      
-      # multiply each reaction by the factor so that min(rxn) == min(grp)
-      
-      group_by(exp, grp) %>%
-      mutate(factor = min_col / min_grp) %>%
-      mutate(fnorm_value = value / factor) %>%
-      
-      # zero-correct
-      
-      mutate(fnorm_value = fnorm_value - min_col) %>%
-
-      # normalize from 0 to 1            
-
-#      mutate(max_col = max(fnorm_value, na.rm = TRUE)) %>%
-#      mutate(fnorm_value = fnorm_value / max_col) %>%
-
-      # remove the temporary columns
-            
-      ungroup() %>%
-      select(hours, Time, grp, fibril_conc, fibril_type, monomer_conc,
-             monomer_type, replicate, exp, fnorm_value)
+                  return()
+      } else {
+            return(data)
+      }
 }
 
-process_data <- function(exp_id, normalize = TRUE, filter = TRUE) {
+mean_and_sd <- function(data, stats = TRUE) {
+
+      if (stats) {
+            data %>%
+                  group_by(hours, reaction) %>%
+                  mutate(mean = mean(value)) %>%
+                  mutate(sd = sd(value)) %>%
+                  
+                  mutate(value = mean) %>%
+            return()
+      } else {
+            return(data)
+      }
+}
+
+process_data <- function(exp_id, normalize = FALSE, stats = FALSE) {
 
             read_data(exp_id) %>%
 
@@ -201,59 +206,77 @@ process_data <- function(exp_id, normalize = TRUE, filter = TRUE) {
 
             pivot_and_group(exp_id) %>%
 
-            { if (normalize) normalize_by_commonfactor(.) else . } %>%
-            { if (filter) . else filter(!str_detect(grp, filter)) } %>%
+            normalize_by_commonfactor(normalize) %>%
+            
+            mean_and_sd(stats) %>%
 
             return(return_data)
+      
+}
 
+x030_156 <- process_data("030_156")
+x030_157 <- process_data("030_157")
+
+hybrid <- bind_rows(x030_156, x030_157)
+hybrid_stats <- hybrid %>% mean_and_sd()
+hybrid_normalized <- hybrid %>% normalize_by_commonfactor()
+hybrid_normalized_stats <- hybrid_normalized %>% mean_and_sd()
+
+hybrid_plot <- function(data, monomer, color, title_, sub_, stats = FALSE) {
+      if (stats) {
+            data %>%
+                  filter(!id == "2 hf 20 prldm 030_156 B") %>%
+                  filter(!fibril_conc == 0) %>%
+                  filter(!monomer_conc == 0) %>%
+                  
+                  filter(hours <= hours(24)) %>%
+            
+                  filter(monomer_type == "asm") %>%
+                  
+                  ggplot(aes(x = hours / 3600, y = value, group = id,
+                             color = exp)) +
+                  geom_errorbar(aes(ymin = value - sd, ymax = value + sd), width = 0.2) +
+                  geom_point() +
+                  
+                  labs(title = title_,
+                       subtitle = sub_) +
+                  geom_line()
+      } else {
+            data %>%
+                  filter(!id == "2 hf 20 prldm 030_156 B") %>%
+                  filter(!fibril_conc == 0) %>%
+                  filter(!monomer_conc == 0) %>%
+                  
+                  filter(hours <= hours(24)) %>%
+                  
+                  filter(monomer_type == "asm") %>%
+                  
+                  ggplot(aes(x = hours / 3600, y = value, group = id,
+                             color = exp)) +
+                  # geom_errorbar(aes(ymin = value - sd, ymax = value + sd), width = 0.2) +
+                  geom_point() +
+                  
+                  labs(title = title_,
+                       subtitle = sub_) +
+                  geom_line()
       }
+}
 
-x030_156 <- read_data("030_156") %>%
-      relabel_data("030_156") %>%
-      pivot_and_group("030_156")
-x030_157 <- read_data("030_157") %>%
-      relabel_data("030_157") %>%
-      pivot_and_group("030_157")
+hybrid_norm %>% hybrid_plot("asm")
 
-bind_rows(x030_156, x030_157) %>%
-      
-      filter(!id == "2 hf 20 prldm 030_156 B") %>%
-      
-      group_by(id) %>%
-            mutate(max_col = max(value, na.rm = TRUE)) %>%
-      
-      
-      group_by(exp) %>%
-            mutate(max_exp = max(max_col)) %>%
-            mutate(min_exp = min(max_col)) %>%
-            mutate(deviation = max_exp - min_exp) %>%
-      
-      ungroup() %>%
-            mutate(max_dev = max(deviation)) %>%
-            mutate(factor = deviation / max_dev) %>%# group_by(exp, factor) %>% summarise()
-      
-      group_by(id) %>%
-            # mutate(value = value / factor) %>%# View()
 
-      # group_by(hours, reaction) %>%
-      #       mutate(mean = mean(value)) %>%
-      #       mutate(sd = sd(value)) %>%
-      # 
-      #       mutate(value = mean) %>%
-      
-      filter(monomer_type == "asm") %>%
-      filter(monomer_conc <= 10) %>%
-      filter(!monomer_conc == 0) %>%
-      filter(hours <= hours(24)) %>%
-      filter(!fibril_conc == 0) %>%
-      # filter(exp == "030_156 B") %>%
-      
-      ggplot(aes(x = hours / 3600, y = value, group = id,
-                 color = exp)) +
-      # geom_errorbar(aes(ymin = value - sd, ymax = value + sd), width = 0.2) +
-      geom_point() +
-      
-      labs(title = "Normalized | by rxn | 15 20 uM") +
-      # labs(title = "normalized | 15, 20 asm") +
-      # labs(title = "raw data | 15, 20 asm") +
-      geom_line()
+hybrid_unnorm %>% hybrid_plot("asm",
+                              "exp",
+                              "raw data | asm | by exp",
+                              
+                              )
+hybrid_norm_mean %>% hybrid_plot("asm")
+hybrid_unnorm_mean %>% hybrid_plot("asm")
+hybrid_norm %>% hybrid_plot("prldm")
+hybrid_unnorm %>% hybrid_plot("prldm")
+hybrid_norm_mean %>% hybrid_plot("prldm")
+hybrid_unnorm_mean %>% hybrid_plot("prldm")
+
+# factor-corrected | asm monomers | by exp",
+#                  subtitle = "zero-corrected, one factor per experiment") +
+#             geom_line()

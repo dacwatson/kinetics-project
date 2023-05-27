@@ -1,33 +1,305 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
 ```{r}
 library(here)
 here()
-source(here("scripts", "roundTwo", "main.R"))
+# source(here("scripts", "roundTwo", "main.R"))
 ```
 
-Read the .csv files into data 
+## aS monomer reactions
 
-```{r}
-x030_156 <- read_data("030_156") %>%
-      relabel_data("030_156") %>%
-      pivot_and_group("030_156")
-x030_157 <- read_data("030_157") %>%
-      relabel_data("030_157") %>%
-      pivot_and_group("030_157")
-
-df <- bind_rows(x030_156, x030_157)
-df %>% View()
-
-df %>% 
-      filter(exp == "030_156") %>%       
+```{r paged.print=TRUE}
+hybrid %>% 
+      filter(exp == "030_156 A") %>%
+      filter(monomer_type == "asm") %>%
+      filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
       
       ggplot(aes(x = hours / 3600, y = value, group = id,
-                 color = exp)) +
-      # geom_errorbar(aes(ymin = value - sd, ymax = value + sd), width = 0.2) +
+           color = reaction)) +
+      geom_point() +
+      geom_line() +
+      labs(title = "raw asm rxns of 030_156 A",
+           subtitle = "[figure 1a]")
+
+hybrid %>% 
+      filter(exp == "030_156 B") %>%
+      filter(monomer_type == "asm") %>%
+      filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
+      
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = reaction)) +
+      geom_point() +
+      geom_line() +
+      labs(title = "raw asm rxns of 030_156 B",
+           subtitle = "[figure 1b]")
+
+hybrid %>% 
+      filter(exp == "030_157 A") %>%
+      filter(monomer_type == "asm") %>%
+      filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
+
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = reaction)) +
       geom_point() +
       
-      labs(title = "Normalized | by Rxn | 15 20 uM") +
-      # labs(title = "normalized | 15, 20 asm") +
-      # labs(title = "raw data | 15, 20 asm") +
+      labs(title = "raw asm rxns of 030_157 A",
+           subtitle = "[figure 1c]") +
+      geom_line()
+
+hybrid %>% 
+      filter(exp == "030_157 B") %>%
+      filter(monomer_type == "asm") %>%
+      filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
+
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = reaction)) +
+      geom_point() +
+      
+      labs(title = "raw asm rxns of 030_157 B",
+           subtitle = "[figure 1d]") +
+      geom_line()
+
+```
+
+We got very consistent results from the hf-asm reactions. They simply need to be scaled by the correction procedure.
+
+```{r}
+hybrid %>% 
+      filter(grepl("030_156", exp)) %>%
+
+      filter(monomer_type == "asm") %>%
+      filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
+      
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = exp)) +
+      geom_point() +
+      geom_line() +
+      labs(title = "raw asm rxns of 030_156",
+           subtitle = "[figure 2a]")
+hybrid %>% 
+      filter(grepl("030_157", exp)) %>%
+      
+      filter(monomer_type == "asm") %>%
+      filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
+      
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = exp)) +
+      geom_point() +
+      geom_line() +
+      labs(title = "raw asm rxns of 030_157",
+           subtitle = "[figure 2b]")
+```
+
+We can see that each replicate of the asm reactions maintains relatively similar ratios, just at different scales.
+
+
+```{r}
+hybrid %>% 
+      filter(grepl("030_156", exp)) %>%
+
+      filter(monomer_type == "prldm") %>%
+      filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
+      
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = exp)) +
+      geom_point() +
+      geom_line() +
+      labs(title = "raw prldm rxns of 030_156",
+           subtitle = "[figure 3a]")
+hybrid %>% 
+      filter(grepl("030_157", exp)) %>%
+      
+      filter(monomer_type == "prldm") %>%
+      filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
+      
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = exp)) +
+      geom_point() +
+      geom_line() +
+      labs(title = "raw asm rxns of 030_157",
+           subtitle = "[figure 3b]")
+```
+It's immediately apparent that these reactions aren't making as much sense, or at least the pattern isn't as immediately clear. It's interesting in figure 3a that while the B replicate had a standard outcome for 5, 10, and 15 uM reactions, A did not. Further, both A and B had the same general reaction in their 20 uM reactions. Let's take a closer look at figure 3a.
+
+```{r}
+hybrid %>% 
+      filter(exp == "030_156 A") %>%
+      filter(monomer_type == "prldm") %>%
+      filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
+      
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = reaction)) +
+      geom_point() +
+      geom_line() +
+      labs(title = "raw prldm rxns of 030_156 A",
+           subtitle = "[figure 1b]")
+
+hybrid %>% 
+      filter(exp == "030_156 B") %>%
+      filter(monomer_type == "prldm") %>%
+      filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
+      
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = reaction)) +
+      geom_point() +
+      geom_line() +
+      labs(title = "raw prldm rxns of 030_156 B",
+           subtitle = "[figure 1b]")
+
+hybrid %>% 
+      filter(exp == "030_157 A") %>%
+      filter(monomer_type == "prldm") %>%
+      filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
+
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = reaction)) +
+      geom_point() +
+      
+      labs(title = "raw prldm rxns of 030_157 A",
+           subtitle = "[figure 1d]") +
+      geom_line()
+hybrid %>% 
+      filter(exp == "030_157 B") %>%
+      filter(monomer_type == "prldm") %>%
+      filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
+
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = reaction)) +
+      geom_point() +
+      
+      labs(title = "raw prldm rxns of 030_157 B",
+           subtitle = "[figure 1d]") +
       geom_line()
 ```
 
+
+```{r}
+hybrid %>% 
+      filter(exp == "030_157 B") %>%
+      
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = reaction)) +
+      geom_point() +
+      
+      labs(title = "raw rxns of 030_157 B",
+           subtitle = "") +
+      geom_line()
+
+```
+
+
+
+```{r}
+hybrid %>%
+      filter(!id == "2 hf 20 prldm 030_156 B") %>%
+      filter(!fibril_conc == 0) %>%
+      filter(!monomer_conc == 0) %>%
+      
+      filter(hours <= hours(24)) %>%
+
+      filter(monomer_conc <=10) %>%
+      filter(monomer_type == "asm") %>%
+      
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+                 color = exp)) +
+      # geom_errorbar(aes(
+      #       ymin = value - sd, ymax = value + sd), width = 0.2) +
+      geom_point() +
+      
+      labs(title = "uncorrected | asm | by exp",
+           subtitle = "") +
+      geom_line()
+
+
+```
+
+```{r}
+hybrid_normalized %>%
+      filter(!id == "2 hf 20 prldm 030_156 B") %>%
+      filter(!fibril_conc == 0) %>%
+      filter(!monomer_conc == 0) %>%
+      
+      filter(hours <= hours(24)) %>%
+
+      filter(monomer_conc <=10) %>%
+      filter(monomer_type == "asm") %>%
+      
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+                 color = exp)) +
+      # geom_errorbar(aes(
+      #       ymin = value - sd, ymax = value + sd), width = 0.2) +
+      geom_point() +
+      
+      labs(title = "normalized | asm | by exp",
+           subtitle = "") +
+      geom_line()
+```
+
+```{r}
+hybrid %>%
+      filter(!id == "2 hf 20 prldm 030_156 B") %>%
+      filter(!fibril_conc == 0) %>%
+      filter(!monomer_conc == 0) %>%
+      
+      filter(hours <= hours(24)) %>%
+
+      filter(monomer_type == "asm") %>%
+      
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+                 color = reaction)) +
+      # geom_errorbar(aes(
+      #       ymin = value - sd, ymax = value + sd), width = 0.2) +
+      geom_point() +
+      
+      labs(title = "uncorrected | asm | by reaction",
+           subtitle = "") +
+      geom_line()
+
+```
+
+```{r}
+hybrid_normalized %>%
+      filter(!id == "2 hf 20 prldm 030_156 B") %>%
+      filter(!fibril_conc == 0) %>%
+      filter(!monomer_conc == 0) %>%
+      
+      filter(hours <= hours(24)) %>%
+
+      filter(monomer_type == "asm") %>%
+      
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+                 color = reaction)) +
+      # geom_errorbar(aes(
+      #       ymin = value - sd, ymax = value + sd), width = 0.2) +
+      geom_point() +
+      
+      labs(title = "normalized | asm | by reaction",
+           subtitle = "") +
+      geom_line()
+
+```
+
+```{r}
+hybrid_normalized_stats %>%
+      filter(!id == "2 hf 20 prldm 030_156 B") %>%
+      filter(!fibril_conc == 0) %>%
+      filter(!monomer_conc == 0) %>%
+      
+      filter(hours <= hours(24)) %>%
+
+      filter(monomer_type == "asm") %>%
+      
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+                 color = reaction)) +
+      # geom_errorbar(aes(
+      #       ymin = value - sd, ymax = value + sd), width = 0.2) +
+      geom_point() +
+      
+      labs(title = "normalized | asm | by reaction",
+           subtitle = "") +
+      geom_line()
+
+```
