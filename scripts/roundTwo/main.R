@@ -172,6 +172,9 @@ pivot_and_group <- function(data, exp_id) {
             sep = " ",
             remove = FALSE
             ) %>%
+      mutate(across(contains("conc"), as.numeric)) %>%
+      mutate(across(contains("conc"), ~ tibble::num(., sigfig = 2))) %>%
+
       unite("id", c(reaction, exp), sep = " ", remove = FALSE) %>%
 
       drop_na(`Time`, `value`) %>%
@@ -180,6 +183,7 @@ pivot_and_group <- function(data, exp_id) {
       mutate(hours = hours - min(hours)) %>%
       filter(hours <= hours(48))
 }
+process_data("030_158")
 
 normalize_by_commonfactor <- function(data, normalize = TRUE) {
 
