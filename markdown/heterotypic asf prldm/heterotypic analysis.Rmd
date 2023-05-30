@@ -1,6 +1,8 @@
 ---
 title: "asf prldm heterotypic analysis"
-output: html_notebook
+output:
+  html_notebook: default
+  pdf_document: default
 ---
 
 ```{r}
@@ -11,20 +13,135 @@ library(here)
 source(here("scripts", "roundTwo", "main.R"))
 ```
 
-```{r}
-heterotypic <- process_data("030_158")
+```{r, message = FALSE}
+x030_152 <- process_data("030_152")
+x030_158 <- process_data("030_158")
 ```
 
+## 030_152 (old materials)
+
+The results seem inconsistent with expectations and conditions were not using the same materials as newer replicates
+
 ```{r}
-heterotypic %>% 
+x030_152 %>% 
+      filter(!monomer_conc == 0 && !fibril_conc == 0 && !monomer_conc == 25) %>%
+      filter(fibril_conc == 1) %>%
+      filter(hours <= hours(24)) %>%
+
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = reaction)) +
+      geom_point() +
+      geom_line() +
+      labs(title = "030_152 | 1 uM asf | by reaction",
+           subtitle = "[figure 1a]")
+x030_152 %>% 
+      filter(!monomer_conc == 0 && !fibril_conc == 0 && !monomer_conc == 25) %>%
+      filter(fibril_conc == 2) %>%
+      filter(hours <= hours(24)) %>%
+
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = reaction)) +
+      geom_point() +
+      geom_line() +
+      labs(title = "030_152 | 2 uM asf | by reaction",
+           subtitle = "[figure 1b]")
+x030_152 %>% 
+      filter(!monomer_conc == 0 && !fibril_conc == 0 && !monomer_conc == 25) %>%
+      filter(fibril_conc == 4) %>%
+      filter(hours <= hours(24)) %>%
+
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = reaction)) +
+      geom_point() +
+      geom_line() +
+      labs(title = "030_152 | 4 uM asf | by reaction",
+           subtitle = "[figure 1c]")
+
+```
+
+## 030_158 (recent)
+
+Some strange "bunching" between 10 and 15 uM monomer is observed at one and two uM fibrils, but not four uM fibrils.
+
+```{r}
+x030_158 %>% 
       filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
       filter(fibril_conc == 1) %>%
+      filter(hours <= hours(24)) %>%
       
       ggplot(aes(x = hours / 3600, y = value, group = id,
            color = reaction)) +
       geom_point() +
       geom_line() +
-      labs(title = "all asm rxns | by reaction",
-           subtitle = "[figure 1a]")
+      labs(title = "030_158 | 1 uM asf | by reaction",
+           subtitle = "[figure 2a]")
+x030_158 %>% 
+      filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
+      filter(fibril_conc == 2) %>%
+      filter(hours <= hours(24)) %>%
+      
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = reaction)) +
+      geom_point() +
+      geom_line() +
+      labs(title = "030_158 | 2 uM asf | by reaction",
+           subtitle = "[figure 2b]")
+x030_158 %>% 
+      filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
+      filter(fibril_conc == 4) %>%
+      filter(hours <= hours(24)) %>%
+      
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = reaction)) +
+      geom_point() +
+      geom_line() +
+      labs(title = "030_158 | 4 uM asf | by reaction",
+           subtitle = "[figure 2c]")
+
 ```
 
+```{r}
+heterotypic <- bind_rows(x030_152, x030_158) %>%
+      normalize_by_commonfactor()
+```
+
+## Datasets combined and normalized
+
+It is clear that these cannot be considered replicates. More datasets with new conditions should be collected.
+
+```{r}
+heterotypic %>% 
+      filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
+      filter(fibril_conc == 1) %>%
+      filter(hours <= hours(24)) %>%
+      
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = reaction)) +
+      geom_point() +
+      geom_line() +
+      labs(title = "both datasets | 1 uM asf | by reaction",
+           subtitle = "[figure 3a]")
+heterotypic %>% 
+      filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
+      filter(fibril_conc == 2) %>%
+      filter(hours <= hours(24)) %>%
+      
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = reaction)) +
+      geom_point() +
+      geom_line() +
+      labs(title = "both datasets | 2 uM asf | by reaction",
+           subtitle = "[figure 3b]")
+heterotypic %>% 
+      filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
+      filter(fibril_conc == 4) %>%
+      filter(hours <= hours(24)) %>%
+      
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = reaction)) +
+      geom_point() +
+      geom_line() +
+      labs(title = "both datasets | 4 uM asf | by reaction",
+           subtitle = "[figure 3c]")
+
+```
