@@ -56,7 +56,8 @@ relabel_data <- function(data, exp_id) {
                       "00 asf 00 prldm" = "G1"
                   ) %>%
                   return()
-      } else if (exp_name == "x030_157") { # hybrid1
+      }
+      else if (exp_name == "x030_157") { # hybrid1
             data %>%
                   rename(
                       "02 hf 00 asm A" = "A1",
@@ -89,32 +90,57 @@ relabel_data <- function(data, exp_id) {
                       "00 hf 15 prldm B" = "D7"
                   ) %>%
                   return()
-      } else if (exp_name == "x030_156") { # hybrid1
+      }
+      else if (exp_name == "x030_156") { # hybrid1
             data %>%
                   rename(
-                      "02 hf 00 asm A" = "A1",
-                      "02 hf 05 asm A" = "A2",
-                      "02 hf 10 asm A" = "A3",
-                      "02 hf 15 asm A" = "A4",
-                      "02 hf 20 asm A" = "A5",
-                      "02 hf 00 asm B" = "A6",
-                      "02 hf 05 asm B" = "A7",
-                      "02 hf 10 asm B" = "A8",
-                      "02 hf 15 asm B" = "A9",
-                      "02 hf 20 asm B" = "A10",
-                      "02 hf 00 prldm A" = "B1",
-                      "02 hf 05 prldm A" = "B2",
-                      "02 hf 10 prldm A" = "B3",
-                      "02 hf 15 prldm A" = "B4",
-                      "02 hf 20 prldm A" = "B5",
-                      "02 hf 00 prldm B" = "B6",
-                      "02 hf 05 prldm B" = "B7",
-                      "02 hf 10 prldm B" = "B8",
-                      "02 hf 15 prldm B" = "B9",
-                      "02 hf 20 prldm B" = "B10",
+                        "02 hf 00 asm A" = "A1",
+                        "02 hf 05 asm A" = "A2",
+                        "02 hf 10 asm A" = "A3",
+                        "02 hf 15 asm A" = "A4",
+                        "02 hf 20 asm A" = "A5",
+                        "02 hf 00 asm B" = "A6",
+                        "02 hf 05 asm B" = "A7",
+                        "02 hf 10 asm B" = "A8",
+                        "02 hf 15 asm B" = "A9",
+                        "02 hf 20 asm B" = "A10",
+                        "02 hf 00 prldm A" = "B1",
+                        "02 hf 05 prldm A" = "B2",
+                        "02 hf 10 prldm A" = "B3",
+                        "02 hf 15 prldm A" = "B4",
+                        "02 hf 20 prldm A" = "B5",
+                        "02 hf 00 prldm B" = "B6",
+                        "02 hf 05 prldm B" = "B7",
+                        "02 hf 10 prldm B" = "B8",
+                        "02 hf 15 prldm B" = "B9",
+                        "02 hf 20 prldm B" = "B10",
                   ) %>%
                   return()
-      } else {
+      }
+      else if (exp_name == "x030_158") { # hybrid1
+            data %>%
+                  rename(
+                        "01 asf 05 prldm" = "A1",
+                        "01 asf 10 prldm" = "A2",
+                        "01 asf 15 prldm" = "A3",
+                        "01 asf 20 prldm" = "A4",
+                        "02 asf 05 prldm" = "A5",
+                        "02 asf 10 prldm" = "A6",
+                        "02 asf 15 prldm" = "A7",
+                        "02 asf 20 prldm" = "A8",
+                        "04 asf 05 prldm" = "A9",
+                        "04 asf 10 prldm" = "A10",
+                        "04 asf 15 prldm" = "A11",
+                        "04 asf 20 prldm" = "A12",
+                        "00 asf 00 prldm" = "B1",
+                        "00 asf 05 prldm" = "B2",
+                        "00 asf 10 prldm" = "B3",
+                        "00 asf 15 prldm" = "B4",
+                        "00 asf 20 prldm" = "B5",
+                  ) %>%
+                  return()
+      }
+      else {
         print("No case found.")
     }
 }
@@ -261,22 +287,3 @@ hybrid_plot <- function(data, monomer, color, title_, sub_, stats = FALSE) {
                   geom_line()
       }
 }
-
-hybrid_norm %>% hybrid_plot("asm")
-
-
-hybrid_unnorm %>% hybrid_plot("asm",
-                              "exp",
-                              "raw data | asm | by exp",
-                              
-                              )
-hybrid_norm_mean %>% hybrid_plot("asm")
-hybrid_unnorm_mean %>% hybrid_plot("asm")
-hybrid_norm %>% hybrid_plot("prldm")
-hybrid_unnorm %>% hybrid_plot("prldm")
-hybrid_norm_mean %>% hybrid_plot("prldm")
-hybrid_unnorm_mean %>% hybrid_plot("prldm")
-
-# factor-corrected | asm monomers | by exp",
-#                  subtitle = "zero-corrected, one factor per experiment") +
-#             geom_line()
