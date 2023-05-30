@@ -240,14 +240,6 @@ process_data <- function(exp_id, normalize = FALSE, stats = FALSE) {
       
 }
 
-x030_156 <- process_data("030_156")
-x030_157 <- process_data("030_157")
-
-hybrid <- bind_rows(x030_156, x030_157)
-hybrid_stats <- hybrid %>% mean_and_sd()
-hybrid_normalized <- hybrid %>% normalize_by_commonfactor()
-hybrid_normalized_stats <- hybrid_normalized %>% mean_and_sd()
-
 hybrid_plot <- function(data, monomer, color, title_, sub_, stats = FALSE) {
       if (stats) {
             data %>%
