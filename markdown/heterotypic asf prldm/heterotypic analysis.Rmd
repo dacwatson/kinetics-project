@@ -12,6 +12,19 @@ source(here("scripts", "roundTwo", "main.R"))
 ```
 
 ```{r}
+heterotypic <- process_data("030_158")
+```
 
+```{r}
+heterotypic %>% 
+      filter(monomer_type == "asm") %>%
+      filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
+      
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = reaction)) +
+      geom_point() +
+      geom_line() +
+      labs(title = "raw asm rxns of 030_156 A",
+           subtitle = "[figure 1a]")
 ```
 

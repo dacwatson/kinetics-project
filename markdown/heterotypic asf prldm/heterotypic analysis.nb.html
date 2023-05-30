@@ -1765,11 +1765,37 @@ source(here(&quot;scripts&quot;, &quot;roundTwo&quot;, &quot;main.R&quot;))</cod
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaGV0ZXJvdHlwaWMgPC0gcHJvY2Vzc19kYXRhKFwiMDMwXzE1OFwiKVxuXG5gYGAifQ== -->
+<pre class="r"><code>heterotypic &lt;- process_data(&quot;030_158&quot;)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiV2FybmluZzogT25lIG9yIG1vcmUgcGFyc2luZyBpc3N1ZXMsIGNhbGwgYHByb2JsZW1zKClgIG9uIHlvdXIgZGF0YSBmcmFtZSBmb3JcbmRldGFpbHMsIGUuZy46XG4gIGRhdCA8LSB2cm9vbSguLi4pXG4gIHByb2JsZW1zKGRhdClcbiJ9 -->
+<pre><code>Warning: One or more parsing issues, call `problems()` on your data frame for
+details, e.g.:
+  dat &lt;- vroom(...)
+  problems(dat)</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaGV0ZXJvdHlwaWMgJT4lIFxuICAgICAgZmlsdGVyKG1vbm9tZXJfdHlwZSA9PSBcImFzbVwiKSAlPiVcbiAgICAgIGZpbHRlcighbW9ub21lcl9jb25jID09IDAgJiYgIWZpYnJpbF9jb25jID09IDApICU+JVxuICAgICAgXG4gICAgICBnZ3Bsb3QoYWVzKHggPSBob3VycyAvIDM2MDAsIHkgPSB2YWx1ZSwgZ3JvdXAgPSBpZCxcbiAgICAgICAgICAgY29sb3IgPSByZWFjdGlvbikpICtcbiAgICAgIGdlb21fcG9pbnQoKSArXG4gICAgICBnZW9tX2xpbmUoKSArXG4gICAgICBsYWJzKHRpdGxlID0gXCJyYXcgYXNtIHJ4bnMgb2YgMDMwXzE1NiBBXCIsXG4gICAgICAgICAgIHN1YnRpdGxlID0gXCJbZmlndXJlIDFhXVwiKVxuYGBgIn0= -->
+<pre class="r"><code>heterotypic %&gt;% 
+      filter(monomer_type == &quot;asm&quot;) %&gt;%
+      filter(!monomer_conc == 0 &amp;&amp; !fibril_conc == 0) %&gt;%
+      
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = reaction)) +
+      geom_point() +
+      geom_line() +
+      labs(title = &quot;raw asm rxns of 030_156 A&quot;,
+           subtitle = &quot;[figure 1a]&quot;)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiYXNmIHBybGRtIGhldGVyb3R5cGljIGFuYWx5c2lzIgpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sKLS0tCgpgYGB7cn0KbGlicmFyeShnZ3Bsb3QyKQpsaWJyYXJ5KGRwbHlyKQpsaWJyYXJ5KGhlcmUpCgpzb3VyY2UoaGVyZSgic2NyaXB0cyIsICJyb3VuZFR3byIsICJtYWluLlIiKSkKYGBgCgpgYGB7cn0KCmBgYAoK</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiYXNmIHBybGRtIGhldGVyb3R5cGljIGFuYWx5c2lzIgpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sKLS0tCgpgYGB7cn0KbGlicmFyeShnZ3Bsb3QyKQpsaWJyYXJ5KGRwbHlyKQpsaWJyYXJ5KGhlcmUpCgpzb3VyY2UoaGVyZSgic2NyaXB0cyIsICJyb3VuZFR3byIsICJtYWluLlIiKSkKYGBgCgpgYGB7cn0KaGV0ZXJvdHlwaWMgPC0gcHJvY2Vzc19kYXRhKCIwMzBfMTU4IikKYGBgCgpgYGB7cn0KaGV0ZXJvdHlwaWMgJT4lIAogICAgICBmaWx0ZXIobW9ub21lcl90eXBlID09ICJhc20iKSAlPiUKICAgICAgZmlsdGVyKCFtb25vbWVyX2NvbmMgPT0gMCAmJiAhZmlicmlsX2NvbmMgPT0gMCkgJT4lCiAgICAgIAogICAgICBnZ3Bsb3QoYWVzKHggPSBob3VycyAvIDM2MDAsIHkgPSB2YWx1ZSwgZ3JvdXAgPSBpZCwKICAgICAgICAgICBjb2xvciA9IHJlYWN0aW9uKSkgKwogICAgICBnZW9tX3BvaW50KCkgKwogICAgICBnZW9tX2xpbmUoKSArCiAgICAgIGxhYnModGl0bGUgPSAicmF3IGFzbSByeG5zIG9mIDAzMF8xNTYgQSIsCiAgICAgICAgICAgc3VidGl0bGUgPSAiW2ZpZ3VyZSAxYV0iKQpgYGAKCg==</div>
 
 
 

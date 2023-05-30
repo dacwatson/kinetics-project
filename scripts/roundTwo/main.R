@@ -163,6 +163,7 @@ pivot_and_group <- function(data, exp_id) {
                   "monomer_conc",
                   "monomer_type",
                   "replicate"),
+            too_few = "align_start"
             ) %>%
       unite("exp", c(exp, replicate), sep = " ", na.rm = TRUE) %>%
       unite(
