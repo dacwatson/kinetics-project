@@ -1,0 +1,3 @@
+note: 
+
+single-column csv files for importing to amylofit
