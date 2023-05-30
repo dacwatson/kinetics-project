@@ -1,0 +1,79 @@
+---
+title: "homotypic processing"
+output: html_notebook
+---
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(here)
+
+source(here("scripts", "roundTwo", "main.R"))
+```
+
+```{r}
+x047_120 <- process_data("047_120")
+x047_122 <- process_data("047_122")
+x047_124 <- process_data("047_124")
+```
+
+```{r}
+prld_homotypic <- bind_rows(x047_120, x047_122, x047_124) %>%
+      filter(hours <= hours(36)) %>%
+      normalize_by_commonfactor()
+```
+
+```{r}
+prld_homotypic %>%
+      filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
+      filter(hours <= hours(36)) %>%
+      
+      filter(exp == "047_120") %>%
+
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = exp)) +
+      geom_point() +
+      geom_line() +
+      labs(title = "all data | raw | by reaction",
+           subtitle = "")
+prld_homotypic %>%
+      filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
+      filter(hours <= hours(36)) %>%
+      
+      filter(exp == "047_122") %>%
+
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = exp)) +
+      geom_point() +
+      geom_line() +
+      labs(title = "all data | raw | by reaction",
+           subtitle = "")
+prld_homotypic %>%
+      filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
+      filter(hours <= hours(36)) %>%
+      
+      filter(exp == "047_124") %>%
+
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = exp)) +
+      geom_point() +
+      geom_line() +
+      labs(title = "all data | raw | by reaction",
+           subtitle = "")
+
+```
+
+```{r}
+prld_homotypic %>%
+      filter(!monomer_conc == 0 && !fibril_conc == 0) %>%
+      filter(fibril_conc == 1) %>%
+      filter(hours <= hours(24)) %>%
+
+      ggplot(aes(x = hours / 3600, y = value, group = id,
+           color = exp)) +
+      geom_point() +
+      geom_line() +
+      labs(title = "all data | raw | by reaction",
+           subtitle = "")
+```
+

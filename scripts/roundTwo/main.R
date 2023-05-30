@@ -27,7 +27,7 @@ relabel_data <- function(data, exp_id) {
       
       exp_name <- paste0("x", exp_id)
       
-      if (exp_name == "x030_152") { # round2
+      if (exp_name == "x030_152") {
             data %>%
                   rename(
                       "01 asf 00 prldm" = "H12",
@@ -56,8 +56,8 @@ relabel_data <- function(data, exp_id) {
                       "00 asf 00 prldm" = "G1"
                   ) %>%
                   return()
-      }
-      else if (exp_name == "x030_157") { # hybrid1
+      }  # heterotypic, disregard
+      else if (exp_name == "x030_157") {
             data %>%
                   rename(
                       "02 hf 00 asm A" = "A1",
@@ -90,8 +90,8 @@ relabel_data <- function(data, exp_id) {
                       "00 hf 15 prldm B" = "D7"
                   ) %>%
                   return()
-      }
-      else if (exp_name == "x030_156") { # hybrid1
+      } # hybrid1, 2
+      else if (exp_name == "x030_156") {
             data %>%
                   rename(
                         "02 hf 00 asm A" = "A1",
@@ -116,8 +116,8 @@ relabel_data <- function(data, exp_id) {
                         "02 hf 20 prldm B" = "B10",
                   ) %>%
                   return()
-      }
-      else if (exp_name == "x030_158") { # hybrid1
+      } # hybrid3, 4
+      else if (exp_name == "x030_158") {
             data %>%
                   rename(
                         "01 asf 05 prldm" = "A1",
@@ -139,7 +139,148 @@ relabel_data <- function(data, exp_id) {
                         "00 asf 20 prldm" = "B5",
                   ) %>%
                   return()
-      }
+      } # heterotypic, disregard
+      else if (exp_name == "x047_120") {
+            data %>%
+                  rename(
+                        ".1 prldf 05 prldm" = "A1",
+                        ".1 prldf 10 prldm" = "A2",
+                        ".1 prldf 15 prldm" = "A3",
+                        ".1 prldf 20 prldm" = "A4",
+                        ".1 prldf 25 prldm" = "A5",
+                        
+                        ".5 prldf 05 prldm" = "A6",
+                        ".5 prldf 10 prldm" = "A7",
+                        ".5 prldf 15 prldm" = "A8",
+                        ".5 prldf 20 prldm" = "A9",
+                        ".5 prldf 25 prldm" = "A10",
+                        
+                        "01 prldf 05 prldm" = "A11",
+                        "01 prldf 10 prldm" = "A12",
+                        "01 prldf 15 prldm" = "B1",
+                        "01 prldf 20 prldm" = "B2",
+                        "01 prldf 25 prldm" = "B3",
+                        
+                        "02 prldf 05 prldm" = "B4",
+                        "02 prldf 10 prldm" = "B5",
+                        "02 prldf 15 prldm" = "B6",
+                        "02 prldf 20 prldm" = "B7",
+                        "02 prldf 25 prldm" = "B8",
+                        
+                        "04 prldf 05 prldm" = "B9",
+                        "04 prldf 10 prldm" = "B10",
+                        "04 prldf 15 prldm" = "B11",
+                        "04 prldf 20 prldm" = "B12",
+                        "04 prldf 25 prldm" = "C1",
+                        
+                        "00 prldf 05 prldm" = "C2",
+                        "00 prldf 10 prldm" = "C3",
+                        "00 prldf 15 prldm" = "C4",
+                        "00 prldf 20 prldm" = "C5",
+                        "00 prldf 25 prldm" = "C6",
+                        
+                        ".1 prldf 00 prldm" = "C7",
+                        ".5 prldf 00 prldm" = "C8",
+                        "01 prldf 00 prldm" = "C9",
+                        "02 prldf 00 prldm" = "C10",
+                        "04 prldf 00 prldm" = "C11",
+                  ) %>%
+                  return()
+      } # prld homotypic 1
+      else if (exp_name == "x047_122") {
+            data %>%
+                  rename(
+                        ".1 prldf 05 prldm" = "F1",
+                        ".1 prldf 10 prldm" = "F2",
+                        ".1 prldf 15 prldm" = "F3",
+                        ".1 prldf 20 prldm" = "F4",
+                        ".1 prldf 25 prldm" = "F5",
+
+                        ".5 prldf 05 prldm" = "F6",
+                        ".5 prldf 10 prldm" = "F7",
+                        ".5 prldf 15 prldm" = "F8",
+                        ".5 prldf 20 prldm" = "F9",
+                        ".5 prldf 25 prldm" = "F10",
+
+                        "01 prldf 05 prldm" = "F11",
+                        "01 prldf 10 prldm" = "F12",
+                        "01 prldf 15 prldm" = "G1",
+                        "01 prldf 20 prldm" = "G2",
+                        "01 prldf 25 prldm" = "G3",
+
+                        "02 prldf 05 prldm" = "G4",
+                        "02 prldf 10 prldm" = "G5",
+                        "02 prldf 15 prldm" = "G6",
+                        "02 prldf 20 prldm" = "G7",
+                        "02 prldf 25 prldm" = "G8",
+
+                        "04 prldf 05 prldm" = "G9",
+                        "04 prldf 10 prldm" = "G10",
+                        "04 prldf 15 prldm" = "G11",
+                        "04 prldf 20 prldm" = "G12",
+                        "04 prldf 25 prldm" = "H1",
+
+                        "00 prldf 05 prldm" = "H2",
+                        "00 prldf 10 prldm" = "H3",
+                        "00 prldf 15 prldm" = "H4",
+                        "00 prldf 20 prldm" = "H5",
+                        "00 prldf 25 prldm" = "H6",
+
+                        ".1 prldf 00 prldm" = "H7",
+                        ".5 prldf 00 prldm" = "H8",
+                        "01 prldf 00 prldm" = "H9",
+                        "02 prldf 00 prldm" = "H10",
+                        "04 prldf 00 prldm" = "H11",
+                  ) %>%
+                  return()
+      } # prld homotypic 2
+      else if (exp_name == "x047_124") {
+            data %>%
+                  rename(
+                        ".1 prldf 05 prldm" = "A1",
+                        ".1 prldf 10 prldm" = "A2",
+                        ".1 prldf 15 prldm" = "A3",
+                        ".1 prldf 20 prldm" = "A4",
+                        ".1 prldf 25 prldm" = "A5",
+                        
+                        ".5 prldf 05 prldm" = "A6",
+                        ".5 prldf 10 prldm" = "A7",
+                        ".5 prldf 15 prldm" = "A8",
+                        ".5 prldf 20 prldm" = "A9",
+                        ".5 prldf 25 prldm" = "A10",
+                        
+                        "01 prldf 05 prldm" = "A11",
+                        "01 prldf 10 prldm" = "A12",
+                        "01 prldf 15 prldm" = "B1",
+                        "01 prldf 20 prldm" = "B2",
+                        "01 prldf 25 prldm" = "B3",
+                        
+                        "02 prldf 05 prldm" = "B4",
+                        "02 prldf 10 prldm" = "B5",
+                        "02 prldf 15 prldm" = "B6",
+                        "02 prldf 20 prldm" = "B7",
+                        "02 prldf 25 prldm" = "B8",
+                        
+                        "04 prldf 05 prldm" = "B9",
+                        "04 prldf 10 prldm" = "B10",
+                        "04 prldf 15 prldm" = "B11",
+                        "04 prldf 20 prldm" = "B12",
+                        "04 prldf 25 prldm" = "C1",
+                        
+                        "00 prldf 05 prldm" = "C2",
+                        "00 prldf 10 prldm" = "C3",
+                        "00 prldf 15 prldm" = "C4",
+                        "00 prldf 20 prldm" = "C5",
+                        "00 prldf 25 prldm" = "C6",
+                        
+                        ".1 prldf 00 prldm" = "C7",
+                        ".5 prldf 00 prldm" = "C8",
+                        "01 prldf 00 prldm" = "C9",
+                        "02 prldf 00 prldm" = "C10",
+                        "04 prldf 00 prldm" = "C11",
+                  ) %>%
+                  return()
+      } # prld homotypic 3
       else {
         print("No case found.")
     }

@@ -1,3 +1,5 @@
 note: 
 
 single-column csv files for importing to amylofit
+
+047 120 122 124
