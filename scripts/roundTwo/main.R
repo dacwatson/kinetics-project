@@ -154,19 +154,17 @@ pivot_and_group <- function(data, exp_id) {
       pivot_longer(cols = !`Time`, names_to = "grp") %>%
       mutate(exp = exp_id) %>%
       
-      separate(
+      separate_wider_delim(
             grp,
-            into = c(
+            delim = " ",
+            names = c(
                   "fibril_conc",
                   "fibril_type",
                   "monomer_conc",
                   "monomer_type",
                   "replicate"),
-            sep = " ",
-            convert = TRUE,
-            fill = "right",
-            extra = "drop") %>%
-      unite("exp", c(exp, replicate), sep = " ") %>%
+            ) %>%
+      unite("exp", c(exp, replicate), sep = " ", na.rm = TRUE) %>%
       unite(
             "reaction",
             c(fibril_conc, fibril_type, monomer_conc, monomer_type),
