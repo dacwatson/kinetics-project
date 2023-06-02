@@ -2,4 +2,4 @@ note:
 
 single-column csv files for importing to amylofit
 
-047 120 122 124
+047_120.csv contains data from 047_120, 047_122, and 047_124
